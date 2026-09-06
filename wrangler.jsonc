@@ -1,23 +1,16 @@
 {
-  // Worker + static assets: Cloudflare serves the prerendered Astro bundle
-  // from its asset store for matching routes, and falls through unmatched
-  // requests (the /api/* payment surface) to the Worker in worker/index.js.
-  // Do NOT add the @astrojs/cloudflare adapter — this site is fully prerendered
-  // and an adapter turns images into runtime /_image requests that Workers
-  // cannot serve.
   "name": "vh",
   "main": "worker/index.js",
-  "compatibility_date": "2026-09-01",
+  "compatibility_date": "2026-09-07",
+
   "assets": {
     "directory": "./dist",
-    // Pages are built as `<route>/index.html`; serve them at /route with no
-    // redirect, and redirect /route/ -> /route so internal links never bounce.
     "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page"
   },
-  // Non-secret config. Set secrets with: wrangler secret put NGENIUS_API_KEY
+
   "vars": {
-    "PUBLIC_SITE_URL": "https://villaggiohotels.ae",
+    "PUBLIC_SITE_URL": "https://vh.bitsserver.workers.dev",
     "NGENIUS_HOST": "https://api-gateway.sandbox.ngenius-payments.com"
   }
 }
