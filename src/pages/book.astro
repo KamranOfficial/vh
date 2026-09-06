@@ -227,16 +227,19 @@ const API_BASE = import.meta.env.PUBLIC_API_BASE || '';
       try {
         const res = await fetch(`${API_BASE}/api/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         const data = await res.json();
-        if (data.demo) {
-          const host = $('notice-host');
-          host.innerHTML = `<div class="notice" style="margin-bottom:1.5rem"><strong>Demo mode —</strong> the N-Genius sandbox key on this preview lacks checkout capability, so this is a simulated payment. With a provisioned key, you are redirected to the real N-Genius hosted payment page.</div>`;
-        }
-        if (data.paymentUrl) { setTimeout(() => { window.location.href = data.paymentUrl; }, 700); }
-        else { setBusy(false); alert('Could not start payment. Please try again.'); }
-      } catch (err) {
-        setBusy(false);
-        alert('Network error — please try again.');
-      }
+     if (!res.ok || !data.paymentUrl || data.demo) {
+  setBusy(false);
+
+  const message =
+    data.detail ||
+    data.error ||
+    'Could not start the N-Genius payment. Please try again.';
+
+  alert(message);
+  return;
+}
+
+window.location.href = data.paymentUrl;
     });
   })();
 </script>
