@@ -9,8 +9,8 @@ interface Props {
 const {
   title = 'Book online today and look forward to a relaxing stay with us',
   text = `Our reservations desk answers around the clock. Call ${site.phone} or write to us and we will hold the right room for you.`,
-  href,
-  label = 'Check availability',
+  href = '/book',
+  label = 'Book your stay',
 } = Astro.props;
 ---
 
@@ -24,12 +24,12 @@ const {
     <div class="cta-actions">
       {
         href ? (
-          <a class="btn btn-primary" href={href} target="_blank" rel="noopener">
+          <a class="btn btn-primary" href={href}>
             {label}
           </a>
         ) : (
-          <a class="btn btn-primary" href="/contact">
-            Enquire &amp; book
+          <a class="btn btn-primary" href="/book">
+            Book your stay
           </a>
         )
       }

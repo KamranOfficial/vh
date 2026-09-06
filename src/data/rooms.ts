@@ -1,10 +1,15 @@
 export interface Room {
+  code: string; // stable slug used in booking URLs, e.g. "deluxe-king"
   name: string;
   size: string;
   bed: string;
   image: string;
   blurb: string;
   amenities: string[];
+  /** Price per night in AED (integer). Used for direct online booking. */
+  pricePerNight: number;
+  /** Short capacity line, e.g. "Sleeps 2 adults". */
+  sleeps: string;
 }
 
 const shared = [
@@ -20,6 +25,7 @@ const shared = [
 
 export const grandRooms: Room[] = [
   {
+    code: 'grand-deluxe-king',
     name: 'Deluxe King Room',
     size: '32 m²',
     bed: '1 extra-large double bed',
@@ -27,8 +33,11 @@ export const grandRooms: Room[] = [
     blurb:
       'A spacious room with a full bathroom and bath tub, dressed in warm neutrals with capital views from the upper floors.',
     amenities: ['Bath tub', 'Smart 50-inch LED TV', 'Cable channels', 'Bathrobe & slippers', ...shared],
+    pricePerNight: 690,
+    sleeps: 'Sleeps 2 adults',
   },
   {
+    code: 'grand-deluxe-twin',
     name: 'Deluxe Twin Room',
     size: '32 m²',
     bed: '2 single beds',
@@ -43,8 +52,11 @@ export const grandRooms: Room[] = [
       'Two complimentary bottles of water',
       ...shared,
     ],
+    pricePerNight: 690,
+    sleeps: 'Sleeps 2 adults',
   },
   {
+    code: 'grand-suite-king',
     name: 'Deluxe Suite King',
     size: '51 m²',
     bed: '1 extra-large double bed',
@@ -59,8 +71,11 @@ export const grandRooms: Room[] = [
       'Free Italian toiletries',
       ...shared,
     ],
+    pricePerNight: 1090,
+    sleeps: 'Sleeps 2 adults + 1 child',
   },
   {
+    code: 'grand-accessible',
     name: 'People of Determination Room',
     size: '32 m²',
     bed: 'On request',
@@ -68,43 +83,58 @@ export const grandRooms: Room[] = [
     blurb:
       'Designed with accessibility and comfort in mind — grab bars, an accessible walk-in shower and easy-to-use controls throughout.',
     amenities: ['Grab bars', 'Accessible walk-in shower', 'Easy-to-use controls', 'Smart 50-inch LED TV', ...shared],
+    pricePerNight: 690,
+    sleeps: 'Sleeps 2 adults',
   },
 ];
 
 export const villageRooms: Room[] = [
   {
+    code: 'village-standard',
     name: 'Standard Room',
     size: '20 m²',
     bed: '1 queen bed',
     image: 'vh-room-standard.jpg',
     blurb: 'A compact, quiet room with a walk-in shower — the simplest way into the village.',
     amenities: ['Walk-in shower', 'LED TV', 'Cable channels', ...shared],
+    pricePerNight: 390,
+    sleeps: 'Sleeps 2 adults',
   },
   {
+    code: 'village-superior',
     name: 'Superior Room',
     size: '30 m²',
     bed: '1 extra-large double bed',
     image: 'vh-room-superior.jpg',
     blurb: 'A spacious, modern room with a walk-in shower, bathrobe and a proper writing desk.',
     amenities: ['Walk-in shower', 'Bathrobe', 'LED TV', 'Cable channels', ...shared],
+    pricePerNight: 490,
+    sleeps: 'Sleeps 2 adults',
   },
   {
+    code: 'village-deluxe-king',
     name: 'Deluxe King Room',
     size: '38 m²',
     bed: '1 extra-large double bed',
     image: 'vh-room-deluxe-king.jpg',
     blurb: 'Extra space and a full bathroom with a bath tub, overlooking the gardens or courtyards.',
     amenities: ['Bath tub', 'Bathrobe', 'LED TV', ...shared],
+    pricePerNight: 590,
+    sleeps: 'Sleeps 2 adults',
   },
   {
+    code: 'village-deluxe-twin',
     name: 'Deluxe Twin Room',
     size: '38 m²',
     bed: '2 single beds',
     image: 'vh-room-deluxe-twin.jpg',
     blurb: 'A twin layout with the same 38 m² footprint, bath tub and separate seating area.',
     amenities: ['Bath tub', 'Shower', 'Bathrobe', 'LED TV', ...shared],
+    pricePerNight: 590,
+    sleeps: 'Sleeps 2 adults',
   },
   {
+    code: 'village-junior-suite',
     name: 'Junior Suite',
     size: '39 m²',
     bed: '1 extra-large double bed',
@@ -112,8 +142,11 @@ export const villageRooms: Room[] = [
     blurb:
       'Dual-purpose living and work space in an open style, with a generous two-seater sofa and a small private terrace.',
     amenities: ['Private terrace', 'Two-seater sofa', 'Walk-in shower', 'LED TV', ...shared],
+    pricePerNight: 790,
+    sleeps: 'Sleeps 2 adults + 1 child',
   },
   {
+    code: 'village-deluxe-suite',
     name: 'Deluxe Suite',
     size: '46 m²',
     bed: '1 extra-large double bed',
@@ -121,8 +154,11 @@ export const villageRooms: Room[] = [
     blurb:
       'An open-plan living and dining area with a three-seater sofa and a luxury bathroom with bath tub.',
     amenities: ['Bath tub', 'Three-seater sofa', 'Flat-screen TV', 'Open-plan living & dining', ...shared],
+    pricePerNight: 990,
+    sleeps: 'Sleeps 3 adults',
   },
   {
+    code: 'village-executive-suite',
     name: 'Executive Suite',
     size: '62 m²',
     bed: '1 king-size bed',
@@ -137,8 +173,11 @@ export const villageRooms: Room[] = [
       'Flat-screen TV',
       ...shared,
     ],
+    pricePerNight: 1290,
+    sleeps: 'Sleeps 4 adults',
   },
   {
+    code: 'village-royal-suite',
     name: 'Royal Suite with Private Pool',
     size: '55 m²',
     bed: '1 king-size bed',
@@ -153,8 +192,11 @@ export const villageRooms: Room[] = [
       'Walk-in shower',
       ...shared,
     ],
+    pricePerNight: 1890,
+    sleeps: 'Sleeps 4 adults',
   },
   {
+    code: 'village-accessible',
     name: 'People of Determination Room',
     size: '38 – 62 m²',
     bed: 'On request',
@@ -162,5 +204,17 @@ export const villageRooms: Room[] = [
     blurb:
       'An inclusive, welcoming space with grab bars, an accessible shower and user-friendly controls for a seamless stay.',
     amenities: ['Grab bars', 'Accessible walk-in shower', 'User-friendly controls', 'Smart 50-inch LED TV', ...shared],
+    pricePerNight: 590,
+    sleeps: 'Sleeps 2 adults',
   },
 ];
+
+export type HotelKey = 'grand' | 'village';
+export const roomCatalog: Record<HotelKey, Room[]> = {
+  grand: grandRooms,
+  village: villageRooms,
+};
+
+export function findRoom(hotel: HotelKey, code: string): Room | undefined {
+  return roomCatalog[hotel].find((r) => r.code === code);
+}

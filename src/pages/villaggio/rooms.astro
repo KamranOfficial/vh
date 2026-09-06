@@ -34,7 +34,7 @@ const h = hotels.village;
         lede="The property is a collection of separate villas, each housing a variety of rooms and suites. Stroll through internal corridors lined with vibrant flowers and lush greenery, and settle into the tranquil ambiance of a village setting."
       />
       <div class="grid g-2 rooms">
-        {villageRooms.map((room, i) => <RoomCard room={room} bookHref={bookingLinks.village} index={i} />)}
+        {villageRooms.map((room, i) => <RoomCard room={room} hotel="village" index={i} />)}
       </div>
     </div>
   </section>

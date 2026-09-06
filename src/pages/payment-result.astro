@@ -1,0 +1,70 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+const API_BASE = import.meta.env.PUBLIC_API_BASE || '';
+---
+
+<Base
+  title="Payment result"
+  description="Your Villaggio Hotels booking payment result."
+>
+  <section class="section">
+    <div class="shell">
+      <div class="result-card reveal" id="result">
+        <div class="result-icon pending" id="r-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>
+        </div>
+        <p class="eyebrow" id="r-eyebrow">Verifying</p>
+        <h1 class="result-state" id="r-state">Checking your payment…</h1>
+        <p class="lede" id="r-msg" style="margin-inline:auto">Please wait while we confirm with the bank.</p>
+        <p class="result-ref" id="r-ref"></p>
+        <div style="margin-top:2rem;display:flex;gap:0.8rem;justify-content:center;flex-wrap:wrap">
+          <a class="btn btn-primary" href="/book" data-testid="link-book-again">Book another stay</a>
+          <a class="btn btn-ghost" href="/">Back to home</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<script is:inline define:vars={{ API_BASE }}>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    const params = new URLSearchParams(location.search);
+    const ref = params.get('ref') || '';
+    const demo = params.get('demo') === '1';
+    const icon = $('r-icon'), eyebrow = $('r-eyebrow'), state = $('r-state'), msg = $('r-msg'), refEl = $('r-ref');
+    if (ref) refEl.textContent = 'Reference: ' + ref;
+
+    const OK = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6 9 17l-5-5"/></svg>';
+    const PEND = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>';
+    const FAIL = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+
+    function show(kind, title, message) {
+      icon.className = 'result-icon ' + kind;
+      icon.innerHTML = kind === 'ok' ? OK : kind === 'fail' ? FAIL : PEND;
+      eyebrow.textContent = kind === 'ok' ? 'Confirmed' : kind === 'fail' ? 'Declined' : 'Pending';
+      state.textContent = title;
+      msg.textContent = message;
+    }
+
+    async function check() {
+      if (!ref) { show('fail', 'No payment reference', 'We could not find a payment reference. If you completed a payment, please contact ' + 'reservations.'); return; }
+      try {
+        const res = await fetch(`${API_BASE}/api/order-status?ref=${encodeURIComponent(ref)}&demo=${demo ? 1 : 0}`);
+        const data = await res.json();
+        const s = (data.state || 'UNKNOWN').toUpperCase();
+        if (s === 'CAPTURED' || s === 'AUTHORIZED' || s === 'SETTLED' || s === 'SUCCESS') {
+          show('ok', 'Payment confirmed', 'Thank you. Your reservation is confirmed and a confirmation has been sent to your email.');
+        } else if (s === 'FAILED' || s === 'DECLINED' || s === 'CANCELLED') {
+          show('fail', 'Payment not completed', 'Your payment did not go through. No charge was made. Please try booking again.');
+        } else {
+          show('pending', 'Payment processing', data.message || 'Your payment is still being processed. We will confirm by email shortly.');
+        }
+      } catch (e) {
+        show('pending', 'Payment processing', 'Your payment is still being processed. We will confirm by email shortly.');
+      }
+    }
+    check();
+  })();
+</script>

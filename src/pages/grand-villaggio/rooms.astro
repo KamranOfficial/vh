@@ -34,7 +34,7 @@ const h = hotels.grand;
         lede="Each space is thoughtfully crafted with modern amenities and plush bedding. Whether you are here for business or leisure, these rooms are the ideal retreat in the heart of Abu Dhabi city."
       />
       <div class="grid g-2 rooms">
-        {grandRooms.map((room, i) => <RoomCard room={room} bookHref={bookingLinks.grand} index={i} />)}
+        {grandRooms.map((room, i) => <RoomCard room={room} hotel="grand" index={i} />)}
       </div>
     </div>
   </section>

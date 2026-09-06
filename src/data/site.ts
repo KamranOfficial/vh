@@ -51,7 +51,8 @@ export const nav = [
   { label: 'Contact', href: '/contact' },
 ];
 
+export const bookHref = '/book';
 export const bookingLinks = {
-  grand: 'https://www.booking.com/hotel/ae/grand-villaggio.html',
-  village: 'https://www.booking.com/hotel/ae/one-to-one-the-village.html',
+  grand: '/book?hotel=grand',
+  village: '/book?hotel=village',
 };

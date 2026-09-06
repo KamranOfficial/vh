@@ -1,0 +1,242 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import { grandRooms, villageRooms, roomCatalog } from '../data/rooms';
+import { booking, formatAed } from '../data/booking';
+import { hotels } from '../data/site';
+
+const catalog = {
+  grand: grandRooms.map((r) => ({ code: r.code, name: r.name, pricePerNight: r.pricePerNight, sleeps: r.sleeps, size: r.size, bed: r.bed, blurb: r.blurb })),
+  village: villageRooms.map((r) => ({ code: r.code, name: r.name, pricePerNight: r.pricePerNight, sleeps: r.sleeps, size: r.size, bed: r.bed, blurb: r.blurb })),
+};
+const API_BASE = import.meta.env.PUBLIC_API_BASE || '';
+---
+
+<Base
+  title="Book your stay"
+  description="Reserve a room at Villaggio Hotels & Resorts in Abu Dhabi and pay securely online with N-Genius."
+  jsonLd={{
+    '@context': 'https://schema.org',
+    '@type': 'Hotel',
+    name: 'Villaggio Hotels & Resorts',
+    priceRange: 'AED 390 - 1890',
+    paymentAccepted: 'Credit Card, N-Genius Online',
+    currenciesAccepted: 'AED',
+  }}
+>
+  <Hero
+    image="gv-entrance-night.webp"
+    alt="Villaggio Hotels entrance at night"
+    eyebrow="Reservations"
+    title="Book your stay"
+    sub="Choose a room, pick your dates, and pay securely online. Confirmation is immediate."
+    height="mid"
+  />
+
+  <section class="section">
+    <div class="shell">
+      <SectionHead
+        eyebrow="Secure booking"
+        title="Reserve in minutes, pay online"
+        lede="All prices are in UAE Dirhams and include Abu Dhabi municipality fees and tourism dirham. Payment is processed securely by N-Genius Online."
+      />
+
+      <div id="notice-host"></div>
+
+      <form id="book-form" class="book-grid" novalidate>
+        <div class="stack" style="gap:1.5rem">
+          <div class="form-row r2">
+            <div class="field">
+              <label class="field-label" for="f-hotel">Hotel</label>
+              <select class="input" id="f-hotel" name="hotel" data-testid="select-hotel">
+                <option value="village">Villaggio Hotel</option>
+                <option value="grand">Grand Villaggio Hotel</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label" for="f-room">Room</label>
+              <select class="input" id="f-room" name="roomCode" data-testid="select-room"></select>
+            </div>
+          </div>
+
+          <div class="form-row r2">
+            <div class="field">
+              <label class="field-label" for="f-checkin">Check-in</label>
+              <input class="input" type="date" id="f-checkin" name="checkIn" data-testid="input-checkin" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="f-checkout">Check-out</label>
+              <input class="input" type="date" id="f-checkout" name="checkOut" data-testid="input-checkout" />
+            </div>
+          </div>
+
+          <div class="form-row r2">
+            <div class="field">
+              <label class="field-label" for="f-adults">Adults</label>
+              <select class="input" id="f-adults" name="adults" data-testid="select-adults">
+                {[1,2,3,4].map((n) => <option value={n}>{n}</option>)}
+              </select>
+            </div>
+            <div class="field">
+              <label class="field-label" for="f-children">Children</label>
+              <select class="input" id="f-children" name="children" data-testid="select-children">
+                {[0,1,2,3].map((n) => <option value={n}>{n}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <hr class="rule" />
+
+          <div class="form-row r2">
+            <div class="field">
+              <label class="field-label" for="f-first">First name</label>
+              <input class="input" type="text" id="f-first" name="firstName" autocomplete="given-name" data-testid="input-firstname" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="f-last">Last name</label>
+              <input class="input" type="text" id="f-last" name="lastName" autocomplete="family-name" data-testid="input-lastname" />
+            </div>
+          </div>
+          <div class="form-row r2">
+            <div class="field">
+              <label class="field-label" for="f-email">Email</label>
+              <input class="input" type="email" id="f-email" name="email" autocomplete="email" data-testid="input-email" />
+            </div>
+            <div class="field">
+              <label class="field-label" for="f-phone">Phone</label>
+              <input class="input" type="tel" id="f-phone" name="phone" autocomplete="tel" placeholder="+971 5x xxx xxxx" data-testid="input-phone" />
+            </div>
+          </div>
+          <div class="field">
+            <label class="field-label" for="f-notes">Special requests (optional)</label>
+            <input class="input" type="text" id="f-notes" name="notes" data-testid="input-notes" />
+          </div>
+        </div>
+
+        <aside class="summary" aria-live="polite">
+          <p class="eyebrow">Your stay</p>
+          <h2 id="sum-room">Select a room</h2>
+          <p class="room-line" id="sum-room-line">&nbsp;</p>
+          <div class="sum-rows" id="sum-rows">
+            <div class="sum-row"><span>Nights</span><span id="r-nights">—</span></div>
+            <div class="sum-row"><span>Room rate</span><span id="r-room">—</span></div>
+            <div class="sum-row"><span>Municipality fee</span><span id="r-muni">—</span></div>
+            <div class="sum-row"><span>Tourism dirham</span><span id="r-tour">—</span></div>
+            <div class="sum-row total"><span>Total</span><span id="r-total">—</span></div>
+          </div>
+          <button type="submit" class="pay-btn" id="pay-btn" data-testid="button-pay">
+            <span id="pay-label">Pay now</span>
+            <svg width="16" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true"><path d="M0 5h12M8.5 1 12.5 5l-4 4" stroke="currentColor" stroke-width="1.4"></path></svg>
+          </button>
+          <p style="margin-top:0.9rem;font-size:var(--text-xs);color:var(--ink-3);text-align:center">
+            Secure payment by N-Genius Online · Cards &amp; wallets
+          </p>
+        </aside>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<script is:inline define:vars={{ catalog, API_BASE }}>
+  (function () {
+    const TAXES = { municipalityRate: 0.07, tourismDirhamPerNight: 20 };
+    const fmt = (n) => new Intl.NumberFormat('en-AE', { style: 'currency', currency: 'AED', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(n);
+    const $ = (id) => document.getElementById(id);
+
+    const hotelSel = $('f-hotel');
+    const roomSel = $('f-room');
+    const cin = $('f-checkin');
+    const cout = $('f-checkout');
+    const adultsSel = $('f-adults');
+    const childrenSel = $('f-children');
+    const form = $('book-form');
+    const payBtn = $('pay-btn');
+    const payLabel = $('pay-label');
+
+    function todayPlus(d) { const t = new Date(); t.setHours(0,0,0,0); t.setDate(t.getDate() + d); return t.toISOString().slice(0,10); }
+    const tomorrow = todayPlus(1);
+    const dayAfter = todayPlus(3);
+    cin.value = tomorrow; cout.value = dayAfter;
+    cin.min = todayPlus(0); cout.min = todayPlus(1);
+
+    function populateRooms() {
+      const h = hotelSel.value;
+      const rooms = catalog[h] || [];
+      const prev = roomSel.value;
+      roomSel.innerHTML = rooms.map((r) => `<option value="${r.code}">${r.name} · ${fmt(r.pricePerNight)}/night</option>`).join('');
+      if (prev && rooms.find((r) => r.code === prev)) roomSel.value = prev;
+      update();
+    }
+    hotelSel.addEventListener('change', populateRooms);
+
+    function nights() {
+      const a = Date.parse(cin.value + 'T00:00:00');
+      const b = Date.parse(cout.value + 'T00:00:00');
+      if (Number.isNaN(a) || Number.isNaN(b)) return 0;
+      const d = Math.round((b - a) / 86400000);
+      return d > 0 ? d : 0;
+    }
+    function currentRoom() {
+      const rooms = catalog[hotelSel.value] || [];
+      return rooms.find((r) => r.code === roomSel.value) || rooms[0];
+    }
+
+    function update() {
+      const room = currentRoom(); if (!room) return;
+      $('sum-room').textContent = room.name;
+      $('sum-room-line').textContent = `${room.size} · ${room.bed} · ${room.sleeps}`;
+      const n = nights();
+      const roomTotal = room.pricePerNight * n;
+      const muni = Math.round(roomTotal * TAXES.municipalityRate);
+      const tour = TAXES.tourismDirhamPerNight * n;
+      const total = roomTotal + muni + tour;
+      $('r-nights').textContent = n > 0 ? n : '—';
+      $('r-room').textContent = n > 0 ? fmt(roomTotal) : '—';
+      $('r-muni').textContent = n > 0 ? fmt(muni) : '—';
+      $('r-tour').textContent = n > 0 ? fmt(tour) : '—';
+      $('r-total').textContent = n > 0 ? fmt(total) : '—';
+    }
+    [cin, cout, roomSel, adultsSel, childrenSel].forEach((el) => el.addEventListener('input', () => { if (cout.value <= cin.value) cout.value = todayPlus((Date.parse(cin.value+'T00:00:00')-Date.parse(todayPlus(0)+'T00:00:00'))/86400000 + 1); update(); }));
+
+    // Preselect from URL ?hotel=&room=
+    const params = new URLSearchParams(location.search);
+    if (params.get('hotel')) hotelSel.value = params.get('hotel');
+    populateRooms();
+    if (params.get('room')) roomSel.value = params.get('room');
+    update();
+
+    function setBusy(b) { payBtn.disabled = b; payLabel.textContent = b ? 'Processing…' : 'Pay now'; }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const room = currentRoom(); if (!room) return;
+      const n = nights();
+      if (n < 1) { cin.focus(); return; }
+      const first = $('f-first').value.trim(), last = $('f-last').value.trim(), email = $('f-email').value.trim();
+      if (!first || !last) { $('f-first').focus(); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { $('f-email').focus(); return; }
+
+      const payload = {
+        hotel: hotelSel.value, roomCode: room.code, roomName: room.name,
+        checkIn: cin.value, checkOut: cout.value,
+        adults: Number(adultsSel.value), children: Number(childrenSel.value),
+        guest: { firstName: first, lastName: last, email, phone: $('f-phone').value.trim(), notes: $('f-notes').value.trim() },
+      };
+      setBusy(true);
+      try {
+        const res = await fetch(`${API_BASE}/api/checkout`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        const data = await res.json();
+        if (data.demo) {
+          const host = $('notice-host');
+          host.innerHTML = `<div class="notice" style="margin-bottom:1.5rem"><strong>Demo mode —</strong> the N-Genius sandbox key on this preview lacks checkout capability, so this is a simulated payment. With a provisioned key, you are redirected to the real N-Genius hosted payment page.</div>`;
+        }
+        if (data.paymentUrl) { setTimeout(() => { window.location.href = data.paymentUrl; }, 700); }
+        else { setBusy(false); alert('Could not start payment. Please try again.'); }
+      } catch (err) {
+        setBusy(false);
+        alert('Network error — please try again.');
+      }
+    });
+  })();
+</script>

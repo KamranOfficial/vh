@@ -1,14 +1,16 @@
 ---
 import Figure from './Figure.astro';
 import type { Room } from '../data/rooms';
+import { formatAed } from '../data/booking';
 
-interface Props { room: Room; bookHref: string; index?: number }
-const { room, bookHref, index = 0 } = Astro.props;
+interface Props { room: Room; hotel: 'grand' | 'village'; index?: number }
+const { room, hotel, index = 0 } = Astro.props;
 const shown = room.amenities.slice(0, 6);
 const rest = room.amenities.length - shown.length;
+const bookHref = `/book?hotel=${hotel}&room=${room.code}`;
 ---
 
-<article class="room reveal">
+<article class="room reveal" style={`transition-delay:${Math.min(index, 4) * 60}ms`}>
   <Figure
     src={room.image}
     alt={`${room.name} at Villaggio Hotels`}
@@ -18,17 +20,21 @@ const rest = room.amenities.length - shown.length;
   <div class="room-body">
     <div class="room-head">
       <h3 class="room-name">{room.name}</h3>
-      <p class="room-facts">
-        <span>{room.size}</span><span class="dot" aria-hidden="true">·</span><span>{room.bed}</span>
-      </p>
+      <div class="price-tag">
+        <span class="price-amount">{formatAed(room.pricePerNight)}</span>
+        <span class="price-unit">/ night</span>
+      </div>
     </div>
+    <p class="room-facts">
+      <span>{room.size}</span><span class="dot" aria-hidden="true">·</span><span>{room.bed}</span><span class="dot" aria-hidden="true">·</span><span>{room.sleeps}</span>
+    </p>
     <p class="room-blurb">{room.blurb}</p>
     <ul class="room-am">
       {shown.map((a) => <li>{a}</li>)}
       {rest > 0 && <li class="more">+{rest} more</li>}
     </ul>
-    <a class="link-arrow" href={bookHref} rel="noopener" target="_blank">
-      Check availability
+    <a class="btn-book" href={bookHref} data-testid={`book-${room.code}`}>
+      Book this room
       <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
         <path d="M0 5h12M8.5 1 12.5 5l-4 4" stroke="currentColor" stroke-width="1.4"></path>
       </svg>
@@ -52,14 +58,24 @@ const rest = room.amenities.length - shown.length;
     gap: 1rem;
     align-items: flex-start;
   }
-  .room-name { font-size: var(--text-xl); }
+  .room-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+  }
+  .room-name { font-size: var(--text-xl); flex: 1; }
+  .price-tag { flex: none; }
   .room-facts {
-    margin-top: 0.4rem;
     font-size: var(--text-sm);
     color: var(--ink-3);
     letter-spacing: 0.02em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.2em;
   }
-  .dot { margin-inline: 0.5em; }
+  .dot { margin-inline: 0.4em; }
   .room-blurb { color: var(--ink-2); font-size: 0.95rem; }
   .room-am {
     list-style: none;
@@ -78,5 +94,4 @@ const rest = room.amenities.length - shown.length;
     border-radius: 100px;
   }
   .room-am .more { background: transparent; color: var(--ink-3); }
-  .link-arrow { margin-top: auto; }
 </style>

@@ -17,7 +17,8 @@ listings:
 - `astro:assets` + `sharp` for responsive WebP
 - `@astrojs/sitemap`
 - Self-hosted variable fonts: **Fraunces** (display) + **Instrument Sans** (body)
-- ~2.7 KB of shipped JavaScript total (scroll reveal, mobile nav, gallery lightbox, Astro prefetch)
+- Dark mode (system preference + manual toggle), scroll reveal, mobile nav, gallery lightbox, Astro prefetch
+- Cloudflare Worker backend for the N-Genius payment API (`worker/`)
 
 ## Requirements
 
@@ -59,17 +60,30 @@ guard in `scripts/relativize.mjs` fails loudly if this regresses.
 
 ## Deploying
 
-This is a plain static bundle: build, then upload `dist/`.
+This is a prerendered static bundle plus a small Cloudflare Worker that handles the
+payment API. Build, then deploy with Wrangler.
 
 ### Cloudflare Workers
 
-`wrangler.jsonc` is committed and configured for static assets only — no `main`
-entry, so there is no Worker script and no adapter involved.
+`wrangler.jsonc` is committed with a `main` Worker (`worker/index.js`) and an
+`assets` binding pointing at `dist/`. Cloudflare serves the prerendered Astro
+bundle from its asset store for matching routes and falls through unmatched
+requests (the `/api/*` payment surface) to the Worker. No Astro adapter is used.
 
 ```bash
 npm run build
 npx wrangler deploy
 ```
+
+Set the N-Genius secrets before the first deploy:
+
+```bash
+npx wrangler secret put NGENIUS_API_KEY   # base64 key from the N-Genius portal
+npx wrangler secret put PUBLIC_SITE_URL    # e.g. https://villaggiohotels.ae
+```
+
+`NGENIUS_HOST` in `wrangler.jsonc` points at the sandbox. Switch it to
+`https://api-gateway.ngenius-payments.com` for live payments.
 
 For a git-connected Workers Build, set build command `npm run build` and leave the
 assets directory as `dist`. If Cloudflare offers to add the Astro framework preset,
@@ -79,8 +93,40 @@ decline it — it installs the adapter and breaks images.
 
 ### Vercel / Netlify / any static host
 
-Build command `npm run build`, output directory `dist`, Node version **22 or
-later**. No adapter, no serverless functions, no environment variables needed.
+The marketing pages are pure static output (build command `npm run build`, output
+directory `dist`, Node **22 or later**). The payment API only runs on Cloudflare
+Workers — on other hosts the `/book` page still renders but checkout falls back to
+a demo payment link.
+
+## Payments (N-Genius Online)
+
+Guests book directly on-site instead of being sent to a third-party listing. The
+flow is `/book` → `/api/checkout` → N-Genius hosted payment page →
+`/payment-result`.
+
+- `src/pages/book.astro` — booking form (hotel, room, dates, guests). Prices are
+  computed live client-side for preview only.
+- `worker/index.js` — Cloudflare Worker exposing `/api/checkout`,
+  `/api/order-status`, and `/api/webhook/ngenius` (stub). It re-validates the
+  booking and re-prices **server-side** from `worker/catalog.js` — the client
+  price is never trusted.
+- `worker/ngenius.js` — N-Genius client: access-token → create-order → order
+  status. The outlet reference is derived from the API key.
+- `worker/preview-server.mjs` — a Node mirror of the Worker for local/preview.
+
+### Taxes & pricing
+
+All prices are in AED. Per night, plus a 7% Abu Dhabi municipality fee and a
+AED 20 tourism dirham per night. Room rates live in `src/data/rooms.ts` and are
+mirrored (authoritatively) in `worker/catalog.js`. Change both together.
+
+### Sandbox note
+
+The N-Genius sandbox key authenticates but order creation returns `accessDenied`
+unless the outlet is provisioned for hosted checkout. The Worker handles this
+gracefully: if order creation fails (or no key is set), `/api/checkout` returns a
+`demo` payment link to `/payment-result` so the UX is fully demonstrable. With a
+provisioned key the real N-Genius hosted checkout replaces the demo automatically.
 
 ## Measured performance
 
@@ -106,17 +152,19 @@ paints immediately and stays visible without JavaScript.
 
 ```
 src/
-  data/        site.ts, rooms.ts, venues.ts, images.ts  <- all copy & photo mapping
-  components/  Hero, Figure, RoomCard, VenueRow, GalleryGrid, Header, Footer, ...
-  layouts/     Base.astro (head, fonts, JSON-LD, reveal script)
-  pages/       index, gallery, contact, experience-abu-dhabi, sustainability, 404
+  data/        site.ts, rooms.ts (with pricing), venues.ts, images.ts, booking.ts
+  components/  Hero, Figure, RoomCard (price + Book now), Header (dark toggle), Footer, ...
+  layouts/     Base.astro (head, fonts, theme init, JSON-LD, reveal script)
+  pages/       index, gallery, contact, book, payment-result, experience-abu-dhabi,
+               sustainability, 404
                grand-villaggio/{index,rooms,dining,facilities}
                villaggio/{index,rooms,dining,facilities}
-  styles/      base.css (design tokens + layout primitives)
+  styles/      base.css (design tokens, dark mode, booking components)
   assets/img/  51 property photos (gv-* Grand Villaggio, vh-* Villaggio Hotel)
+worker/        index.js (Cloudflare Worker), ngenius.js, catalog.js, preview-server.mjs
 public/        favicon.svg, robots.txt, _headers, self-hosted fonts
 scripts/       relativize.mjs (SSR guard + post-build URL rewrite)
-wrangler.jsonc Cloudflare Workers static-assets config
+wrangler.jsonc Cloudflare Workers config (main Worker + assets binding)
 ```
 
 Editing copy, room types, dining venues or facilities usually means touching only
@@ -129,8 +177,8 @@ Editing copy, room types, dining venues or facilities usually means touching onl
 
 ## Notes
 
-- `booking` links in `src/data/site.ts` point at the live Booking.com listings; swap
-  them for a direct booking engine when one is available.
+- Booking is now handled on-site via `/book` and the N-Genius Worker. The old
+  `bookingLinks` in `src/data/site.ts` point at `/book?hotel=...`.
 - `astro.config.mjs` sets `site: 'https://villaggiohotels.ae'` — used by the sitemap
   and canonical URLs. Change it if the site is hosted elsewhere.
 - `src/data/images.ts` throws at build time if a referenced photo filename is
