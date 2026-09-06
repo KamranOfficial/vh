@@ -1,0 +1,15 @@
+{
+  // Static-assets-only Worker: no `main` entry, so Cloudflare serves dist/ directly
+  // from its asset store. Do NOT add the @astrojs/cloudflare adapter — this site is
+  // fully prerendered and an adapter turns images into runtime /_image requests
+  // that Workers cannot serve.
+  "name": "vh",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    // Pages are built as `<route>/index.html`; serve them at /route with no
+    // redirect, and redirect /route/ -> /route so internal links never bounce.
+    "html_handling": "drop-trailing-slash",
+    "not_found_handling": "404-page"
+  }
+}

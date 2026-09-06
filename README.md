@@ -36,12 +36,51 @@ npm run preview  # preview the built site
 
 `npm run build` runs `astro build` followed by `node scripts/relativize.mjs`.
 
-That post-build step rewrites root-absolute URLs (`/_astro/...`, `/fonts/...`,
-page links) into document-relative ones. Without it the site only works when
-served from a domain root; with it the same `dist/` also works when hosted under
-a sub-path (preview proxies, object storage, GitHub Pages style hosts).
+That post-build step does two things:
 
-If you deploy exclusively to a domain root, the step is harmless and can stay.
+1. **Guards against SSR image URLs.** If any page contains `/_image?href=...` the
+   build fails on purpose. See the warning below.
+2. **Rewrites root-absolute URLs** (`/_astro/...`, `/fonts/...`, page links) into
+   document-relative ones, so the same `dist/` works at a domain root *and* under a
+   hosted sub-path (preview proxies, object storage, GitHub Pages style hosts).
+
+## Do not add an Astro adapter
+
+`astro.config.mjs` pins `output: 'static'`. Keep it that way.
+
+In server/SSR mode — which is what `@astrojs/cloudflare`, `@astrojs/netlify` and
+friends switch on — Astro stops pre-generating resized images and instead emits
+runtime URLs like `/_image?href=/_astro/photo.webp&w=640&f=webp`. That endpoint
+needs sharp at request time. Cloudflare Workers and most edge runtimes cannot run
+it, so **every image on the site 404s** while the HTML, CSS and fonts load fine.
+
+The site has no server-rendered routes, so an adapter buys nothing. The build
+guard in `scripts/relativize.mjs` fails loudly if this regresses.
+
+## Deploying
+
+This is a plain static bundle: build, then upload `dist/`.
+
+### Cloudflare Workers
+
+`wrangler.jsonc` is committed and configured for static assets only — no `main`
+entry, so there is no Worker script and no adapter involved.
+
+```bash
+npm run build
+npx wrangler deploy
+```
+
+For a git-connected Workers Build, set build command `npm run build` and leave the
+assets directory as `dist`. If Cloudflare offers to add the Astro framework preset,
+decline it — it installs the adapter and breaks images.
+
+`public/_headers` sets immutable caching on `/_astro/*` and `/fonts/*`.
+
+### Vercel / Netlify / any static host
+
+Build command `npm run build`, output directory `dist`, Node version **22 or
+later**. No adapter, no serverless functions, no environment variables needed.
 
 ## Measured performance
 
@@ -75,8 +114,9 @@ src/
                villaggio/{index,rooms,dining,facilities}
   styles/      base.css (design tokens + layout primitives)
   assets/img/  51 property photos (gv-* Grand Villaggio, vh-* Villaggio Hotel)
-public/        favicon.svg, robots.txt, self-hosted fonts
-scripts/       relativize.mjs (post-build URL rewrite)
+public/        favicon.svg, robots.txt, _headers, self-hosted fonts
+scripts/       relativize.mjs (SSR guard + post-build URL rewrite)
+wrangler.jsonc Cloudflare Workers static-assets config
 ```
 
 Editing copy, room types, dining venues or facilities usually means touching only
