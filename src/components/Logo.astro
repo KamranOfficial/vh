@@ -1,30 +1,53 @@
 ---
-interface Props { class?: string; size?: number }
-const { class: cls = '', size = 34 } = Astro.props;
+/**
+ * Villaggio Hotels & Resorts brand mark.
+ *
+ * Draws from the <LogoSprite /> artwork rendered once per document, so placing the
+ * logo twice on a page costs two <use> elements rather than two copies of the paths.
+ *
+ * variant="wordmark"  gold "villaggio" + wheat emblem only. Use in tight spots such
+ *                     as the header, where the tagline would render a few pixels tall.
+ * variant="lockup"    wordmark plus the "Hotels & Resorts" tagline. The tagline is
+ *                     filled with currentColor, so set `color` on an ancestor: ink on
+ *                     cream, white on dark. Give it at least 80px of height or the
+ *                     tagline becomes unreadable.
+ */
+interface Props {
+  class?: string;
+  height?: number;
+  variant?: 'wordmark' | 'lockup';
+  label?: string;
+}
+
+const {
+  class: cls = '',
+  height = 40,
+  variant = 'wordmark',
+  label = 'Villaggio Hotels & Resorts',
+} = Astro.props;
+
+const VB_W = 2048;
+const VB_H = 678;
+const width = Math.round(height * (VB_W / VB_H));
 ---
 
 <svg
-  class={cls}
-  width={size}
-  height={size}
-  viewBox="0 0 40 40"
-  fill="none"
+  class:list={['vh-logo', cls]}
+  width={width}
+  height={height}
+  viewBox={`0 0 ${VB_W} ${VB_H}`}
   role="img"
-  aria-label="Villaggio Hotels & Resorts"
+  aria-label={label}
   xmlns="http://www.w3.org/2000/svg"
 >
-  <path
-    d="M4 37V17.5C4 8.94 11.16 2 20 2s16 6.94 16 15.5V37"
-    stroke="currentColor"
-    stroke-width="2.4"
-    stroke-linecap="square"
-  ></path>
-  <path
-    d="M12.5 14.5 20 28l7.5-13.5"
-    stroke="currentColor"
-    stroke-width="2.4"
-    stroke-linecap="square"
-    stroke-linejoin="miter"
-  ></path>
-  <path d="M4 37h32" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"></path>
+  <use href="#vh-word"></use>
+  {variant === 'lockup' && <use href="#vh-tag"></use>}
 </svg>
+
+<style>
+  .vh-logo {
+    display: block;
+    height: auto;
+    max-width: 100%;
+  }
+</style>

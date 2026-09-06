@@ -8,7 +8,7 @@ const year = new Date().getFullYear();
   <div class="shell">
     <div class="ftr-top">
       <div class="ftr-brand">
-        <Logo size={40} />
+        <Logo variant="lockup" height={92} label="Villaggio Hotels & Resorts" />
         <p class="ftr-line">
           Two Abu Dhabi addresses. One idea of hospitality — warm, unhurried, genuinely local.
         </p>
@@ -70,6 +70,9 @@ const year = new Date().getFullYear();
     gap: clamp(2rem, 6vw, 5rem);
   }
   .ftr-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 1.4rem; }
+  /* The footer sits on ink, so the tagline (currentColor) picks up white here.
+     Kept large on purpose — below ~80px the tagline stops being readable. */
+  .ftr-brand :global(.vh-logo) { width: 278px; color: #fff; }
   .ftr-line {
     font-family: var(--font-display);
     font-size: var(--text-xl);

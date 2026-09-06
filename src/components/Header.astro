@@ -10,11 +10,7 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 <header class:list={['hdr', overlay && 'hdr-overlay']} data-overlay={overlay ? 'true' : 'false'}>
   <div class="shell-wide hdr-inner">
     <a href="/" class="brand" aria-label="Villaggio Hotels & Resorts — home">
-      <Logo size={30} />
-      <span class="brand-text">
-        <span class="brand-name">Villaggio</span>
-        <span class="brand-sub">Hotels &amp; Resorts</span>
-      </span>
+      <Logo variant="wordmark" height={40} class="brand-logo" />
     </a>
 
     <nav class="nav" aria-label="Primary">
@@ -81,21 +77,14 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
   .brand {
     display: flex;
     align-items: center;
-    gap: 0.7rem;
     flex: none;
   }
-  .brand-text { display: flex; flex-direction: column; line-height: 1.05; }
-  .brand-name {
-    font-family: var(--font-display);
-    font-size: 1.32rem;
-    letter-spacing: -0.015em;
-    font-variation-settings: 'SOFT' 30, 'WONK' 1;
-  }
-  .brand-sub {
-    font-size: 0.58rem;
-    letter-spacing: 0.26em;
-    text-transform: uppercase;
-    opacity: 0.7;
+  /* Sized by width so the mark keeps its 3.02:1 ratio; ~40px tall on desktop. */
+  .brand :global(.vh-logo) { width: 136px; }
+  /* The gold reads on cream and on the hero photo alike, but over imagery a soft
+     shadow keeps the thin strokes from dissolving into a light patch of sky. */
+  .hdr-overlay:not(.is-stuck) .brand :global(.vh-logo) {
+    filter: drop-shadow(0 1px 6px rgba(0, 0, 0, 0.45));
   }
   .nav {
     display: flex;
@@ -191,6 +180,7 @@ const path = Astro.url.pathname.replace(/\/$/, '') || '/';
   }
   @media (max-width: 460px) {
     .hdr-cta { display: none; }
+    .brand :global(.vh-logo) { width: 104px; }
   }
 </style>
 
