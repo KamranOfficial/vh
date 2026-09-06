@@ -1,0 +1,100 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import HotelSubnav from '../../components/HotelSubnav.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import RoomCard from '../../components/RoomCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { hotels, bookingLinks } from '../../data/site';
+import { grandRooms } from '../../data/rooms';
+
+const h = hotels.grand;
+---
+
+<Base
+  title={`Rooms & Suites — ${h.name}`}
+  description="Deluxe King, Deluxe Twin and 51 m² Deluxe Suite King rooms at Grand Villaggio Hotel Abu Dhabi, plus accessible People of Determination rooms. Free Wi-Fi, Italian toiletries and smart 50-inch screens."
+  overlay
+>
+  <Hero
+    image="gv-room-suite-living.webp"
+    alt="The living area of a Deluxe Suite King at Grand Villaggio Hotel"
+    eyebrow={`${h.name} · ${h.rooms} rooms`}
+    title="Rooms & suites"
+    sub="Four layouts, from a 32 m² Deluxe King to a 51 m² suite with two bathrooms. Every room has free Wi-Fi, Italian toiletries and a smart 50-inch screen."
+    height="mid"
+  />
+  <HotelSubnav base="/grand-villaggio" name={h.name} />
+
+  <section class="section">
+    <div class="shell">
+      <SectionHead
+        eyebrow="Accommodation"
+        title="The perfect blend of luxury and comfort"
+        lede="Each space is thoughtfully crafted with modern amenities and plush bedding. Whether you are here for business or leisure, these rooms are the ideal retreat in the heart of Abu Dhabi city."
+      />
+      <div class="grid g-2 rooms">
+        {grandRooms.map((room, i) => <RoomCard room={room} bookHref={bookingLinks.grand} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-sand">
+    <div class="shell">
+      <SectionHead eyebrow="In every room" title="What comes as standard" />
+      <ul class="std reveal">
+        {
+          [
+            'Free Wi-Fi throughout',
+            'Air conditioning',
+            'Smart 50-inch LED TV',
+            'Satellite & cable channels',
+            'Minibar',
+            'Electric kettle, coffee & tea',
+            'Two complimentary bottles of water',
+            'Safety deposit box',
+            'Desk & seating area',
+            'Free Italian toiletries',
+            'Bathrobe & slippers',
+            'Hairdryer & iron',
+            'Wake-up service',
+            'Telephone',
+            'Wardrobe',
+            'Daily housekeeping',
+          ].map((s) => <li>{s}</li>)
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand href={bookingLinks.grand} label="Book Grand Villaggio" />
+</Base>
+
+<style>
+  .rooms { margin-top: clamp(2rem, 5vw, 3.5rem); }
+  .std {
+    margin-top: 2rem;
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.9rem 2rem;
+  }
+  .std li {
+    font-size: 0.92rem;
+    color: var(--ink-2);
+    padding-left: 1.2rem;
+    position: relative;
+  }
+  .std li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 7px;
+    height: 1px;
+    background: var(--clay);
+  }
+  @media (max-width: 900px) { .std { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .std { grid-template-columns: minmax(0, 1fr); } }
+</style>

@@ -1,0 +1,116 @@
+---
+import Logo from './Logo.astro';
+import { site, hotels } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="ftr on-ink">
+  <div class="shell">
+    <div class="ftr-top">
+      <div class="ftr-brand">
+        <Logo size={40} />
+        <p class="ftr-line">
+          Two Abu Dhabi addresses. One idea of hospitality — warm, unhurried, genuinely local.
+        </p>
+        <a href="/contact" class="btn btn-primary">Enquire &amp; book</a>
+      </div>
+
+      <div class="ftr-cols">
+        <div>
+          <h2 class="ftr-h">{hotels.grand.name}</h2>
+          <ul>
+            <li><a href="/grand-villaggio">Overview</a></li>
+            <li><a href="/grand-villaggio/rooms">Rooms &amp; suites</a></li>
+            <li><a href="/grand-villaggio/dining">Dining &amp; nightlife</a></li>
+            <li><a href="/grand-villaggio/facilities">Wellness &amp; meetings</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="ftr-h">{hotels.village.name}</h2>
+          <ul>
+            <li><a href="/villaggio">Overview</a></li>
+            <li><a href="/villaggio/rooms">Rooms &amp; suites</a></li>
+            <li><a href="/villaggio/dining">Restaurants &amp; bars</a></li>
+            <li><a href="/villaggio/facilities">Pools, gym &amp; salons</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="ftr-h">Explore</h2>
+          <ul>
+            <li><a href="/gallery">Gallery</a></li>
+            <li><a href="/experience-abu-dhabi">Experience Abu Dhabi</a></li>
+            <li><a href="/sustainability">Our green commitment</a></li>
+            <li><a href="/contact">Contact us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h2 class="ftr-h">Reservations</h2>
+          <ul>
+            <li><a href={site.phoneHref}>{site.phone}</a></li>
+            <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+            <li class="muted-l">{site.address}</li>
+            <li class="muted-l">{site.hours}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="ftr-bot">
+      <p>© {year} {site.name}. Established {site.founded}, Abu Dhabi.</p>
+      <p class="muted-l">Elite Hotels · Boutique Hotels · Wellness Resorts · Suites</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .ftr { padding-block: clamp(3.5rem, 7vw, 6rem) 2rem; }
+  .ftr-top {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.1fr);
+    gap: clamp(2rem, 6vw, 5rem);
+  }
+  .ftr-brand { display: flex; flex-direction: column; align-items: flex-start; gap: 1.4rem; }
+  .ftr-line {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    line-height: 1.25;
+    max-width: 22ch;
+    color: var(--cream);
+  }
+  .ftr-cols {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 2rem;
+  }
+  .ftr-h {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+  }
+  .ftr-cols ul { list-style: none; padding: 0; display: grid; gap: 0.55rem; }
+  .ftr-cols a { font-size: var(--text-sm); color: #d9d0c2; transition: color 0.3s var(--ease); }
+  .ftr-cols a:hover { color: #fff; }
+  .muted-l { font-size: var(--text-sm); color: #8e8578; max-width: 26ch; }
+  .ftr-bot {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: clamp(2.5rem, 6vw, 4.5rem);
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: var(--text-xs);
+    color: #8e8578;
+  }
+  @media (max-width: 900px) {
+    .ftr-top { grid-template-columns: minmax(0, 1fr); }
+    .ftr-cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 1.5rem; }
+  }
+  @media (max-width: 460px) {
+    .ftr-cols { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

@@ -1,0 +1,155 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const culture = [
+  {
+    name: 'Sheikh Zayed Grand Mosque',
+    text: 'An architectural marvel and one of the largest mosques in the world — 82 domes, more than 1,000 columns and the largest hand-knotted carpet ever made. It welcomes visitors from all backgrounds.',
+  },
+  {
+    name: 'Qasr Al Watan',
+    text: 'The Palace of the Nation offers a fascinating look into the UAE’s history, heritage and governance, through grand halls and intricate domes.',
+  },
+  {
+    name: 'Qasr Al Hosn',
+    text: 'An 18th-century fortress and Abu Dhabi’s oldest stone building, once home to the ruling family and now a museum of the city’s transformation.',
+  },
+  {
+    name: 'Louvre Abu Dhabi',
+    text: 'On Saadiyat Island, a stunning blend of contemporary architecture and global art, uniting cultures and traditions under one roof.',
+  },
+  {
+    name: 'Abrahamic Family House',
+    text: 'A mosque, a church and a synagogue on one site — a symbol of unity among the three faiths and of the UAE’s commitment to religious tolerance.',
+  },
+];
+
+const yas = [
+  { name: 'Ferrari World', text: 'The world’s first Ferrari-branded theme park, home to some of the fastest rides on the planet.' },
+  { name: 'Yas Waterworld', text: 'More than 40 rides and attractions — the perfect place to cool off with the family.' },
+  { name: 'Warner Bros. World', text: 'A fully indoor park bringing the DC Universe and classic cartoons to life.' },
+  { name: 'SeaWorld Abu Dhabi', text: 'Over 100,000 marine animals and interactive experiences that bring the ocean to life.' },
+  { name: 'Yas Marina Circuit', text: 'Home of the Abu Dhabi Grand Prix, with public karting and driving experiences year-round.' },
+];
+---
+
+<Base
+  title="Experience Abu Dhabi"
+  description="What to see from Villaggio Hotels — Sheikh Zayed Grand Mosque, Qasr Al Watan, Louvre Abu Dhabi, the Abrahamic Family House, Ferrari World, Yas Waterworld and Yas Marina Circuit."
+  overlay
+>
+  <Hero
+    image="gv-exterior-street.webp"
+    alt="Grand Villaggio Hotel rising above an Abu Dhabi street"
+    eyebrow="The city"
+    title="Abu Dhabi: modern luxury, Arabian tradition"
+    sub="A vibrant, culturally rich capital where awe-inspiring architecture, luxurious living and world-class attractions converge."
+    height="tall"
+  />
+
+  <section class="section">
+    <div class="shell">
+      <SectionHead
+        eyebrow="Cultural and historical gems"
+        title="Start with the landmarks"
+        lede="Both hotels sit within easy reach of the capital’s great buildings. Our concierge arranges transfers, guides and timed entry."
+      />
+      <div class="list">
+        {
+          culture.map((c, i) => (
+            <article class="row reveal">
+              <span class="row-n">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="row-t">{c.name}</h3>
+              <p class="row-x">{c.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-ink">
+    <div class="shell">
+      <SectionHead
+        light
+        eyebrow="Yas Island & motorsport"
+        title="Then give the day to Yas"
+        lede="Twenty-five minutes from either hotel: four theme parks, a waterpark and a Formula 1 circuit you can drive yourself."
+      />
+      <div class="grid g-3 tiles">
+        {
+          yas.map((y) => (
+            <article class="tile reveal">
+              <h3>{y.name}</h3>
+              <p>{y.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell plan reveal">
+      <div>
+        <p class="eyebrow">Planning</p>
+        <h2 class="plan-t">Ask us at the desk</h2>
+      </div>
+      <div class="stack">
+        <p class="lede">
+          Whether you are passionate about culture, love a good thrill, or simply want to unwind in
+          luxury, Abu Dhabi offers a blend of experiences that caters to everyone. Our front desk is
+          staffed 24 hours and can book tickets, cars and guides on the spot.
+        </p>
+        <p class="muted">
+          For official visitor information see
+          <a class="ext" href="https://visitabudhabi.ae" target="_blank" rel="noopener">visitabudhabi.ae</a>
+          and
+          <a class="ext" href="https://adro.gov.ae" target="_blank" rel="noopener">adro.gov.ae</a>.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .list { margin-top: clamp(2rem, 5vw, 3.5rem); display: grid; }
+  .row {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 1.5fr);
+    gap: clamp(1rem, 3vw, 2.5rem);
+    padding-block: clamp(1.4rem, 3vw, 2.2rem);
+    border-top: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .row:last-child { border-bottom: 1px solid var(--line); }
+  .row-n { font-family: var(--font-display); font-size: 1.1rem; color: var(--clay); }
+  .row-t { font-size: var(--text-xl); }
+  .row-x { color: var(--ink-2); font-size: 0.95rem; }
+
+  .tiles { margin-top: clamp(2rem, 5vw, 3.5rem); }
+  .tile { padding-top: 1.3rem; border-top: 1px solid rgba(255, 255, 255, 0.16); }
+  .tile h3 { font-size: var(--text-lg); color: var(--cream); margin-bottom: 0.5rem; }
+  .tile p { color: #c3b9aa; font-size: 0.92rem; }
+
+  .plan {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(1.5rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .plan-t { font-size: var(--text-2xl); margin-top: 0.7rem; }
+  .ext { border-bottom: 1px solid var(--line); }
+  .ext:hover { color: var(--clay); border-color: var(--clay); }
+
+  @media (max-width: 820px) {
+    .row { grid-template-columns: 2.5rem minmax(0, 1fr); }
+    .row-x { grid-column: 2; }
+    .plan { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

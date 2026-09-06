@@ -1,0 +1,100 @@
+---
+import Figure from './Figure.astro';
+import type { Venue, Facility } from '../data/venues';
+
+interface Props { venue: Venue | Facility; flip?: boolean; index?: number }
+const { venue, flip = false, index = 0 } = Astro.props;
+const kind = 'kind' in venue ? venue.kind : undefined;
+const points = 'points' in venue ? venue.points : undefined;
+---
+
+<article class:list={['vr', flip && 'vr-flip', 'reveal']}>
+  <Figure
+    src={venue.image}
+    alt={venue.name}
+    ratio="ar-4-3"
+    sizes="(max-width: 900px) 92vw, 52vw"
+  />
+  <div class="vr-body">
+    {kind && <p class="eyebrow">{kind}</p>}
+    <h3 class="vr-name">{venue.name}</h3>
+    <p class="vr-blurb">{venue.blurb}</p>
+    {
+      points && (
+        <ul class="vr-points">
+          {points.map((p) => (
+            <li>{p}</li>
+          ))}
+        </ul>
+      )
+    }
+    <dl class="vr-meta">
+      {venue.hours && (
+        <div><dt>Hours</dt><dd>{venue.hours}</dd></div>
+      )}
+      {
+        venue.meta?.map((m) => (
+          <div>
+            <dt>{m.label}</dt>
+            <dd>{m.href ? <a href={m.href}>{m.value}</a> : m.value}</dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</article>
+
+<style>
+  .vr {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: clamp(1.5rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .vr-flip > :global(.media) { order: 2; }
+  .vr-body { display: flex; flex-direction: column; gap: 1rem; align-items: flex-start; }
+  .vr-name { font-size: var(--text-2xl); }
+  .vr-blurb { color: var(--ink-2); max-width: 54ch; }
+  .vr-points {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.45rem;
+    font-size: 0.92rem;
+    color: var(--ink-2);
+  }
+  .vr-points li { position: relative; padding-left: 1.1rem; }
+  .vr-points li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.62em;
+    width: 6px;
+    height: 6px;
+    background: var(--clay);
+    border-radius: 50%;
+  }
+  .vr-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin: 0;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--line);
+    width: 100%;
+  }
+  .vr-meta dt {
+    font-size: 0.64rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 0.2rem;
+  }
+  .vr-meta dd { margin: 0; font-size: 0.92rem; font-weight: 500; }
+  .vr-meta a:hover { color: var(--clay); }
+  @media (max-width: 900px) {
+    .vr { grid-template-columns: minmax(0, 1fr); }
+    .vr-flip > :global(.media) { order: 0; }
+  }
+</style>

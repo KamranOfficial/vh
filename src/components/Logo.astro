@@ -1,0 +1,30 @@
+---
+interface Props { class?: string; size?: number }
+const { class: cls = '', size = 34 } = Astro.props;
+---
+
+<svg
+  class={cls}
+  width={size}
+  height={size}
+  viewBox="0 0 40 40"
+  fill="none"
+  role="img"
+  aria-label="Villaggio Hotels & Resorts"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M4 37V17.5C4 8.94 11.16 2 20 2s16 6.94 16 15.5V37"
+    stroke="currentColor"
+    stroke-width="2.4"
+    stroke-linecap="square"
+  ></path>
+  <path
+    d="M12.5 14.5 20 28l7.5-13.5"
+    stroke="currentColor"
+    stroke-width="2.4"
+    stroke-linecap="square"
+    stroke-linejoin="miter"
+  ></path>
+  <path d="M4 37h32" stroke="currentColor" stroke-width="2.4" stroke-linecap="square"></path>
+</svg>

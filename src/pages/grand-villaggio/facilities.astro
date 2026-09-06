@@ -1,0 +1,96 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import HotelSubnav from '../../components/HotelSubnav.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import VenueRow from '../../components/VenueRow.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { hotels, bookingLinks } from '../../data/site';
+import { grandFacilities } from '../../data/venues';
+
+const h = hotels.grand;
+---
+
+<Base
+  title={`Wellness, Meetings & Facilities — ${h.name}`}
+  description="Pool and Fitness & Wellness Club on the 16th floor, Belle Care Luxury Spa, Ruspa European Spa, business centre and meeting rooms at Grand Villaggio Hotel Abu Dhabi."
+  overlay
+>
+  <Hero
+    image="gv-gym-wide.webp"
+    alt="The fitness floor at Grand Villaggio with cardio machines and free weights"
+    eyebrow={`${h.name} · Wellness & events`}
+    title="Exceptional services and amenities"
+    sub="Dive into the pool on sixteen, train with a coach next door, book a treatment on M, then run your meeting downstairs."
+    height="mid"
+  />
+  <HotelSubnav base="/grand-villaggio" name={h.name} />
+
+  <section class="section">
+    <div class="shell">
+      <SectionHead
+        eyebrow="Facilities"
+        title="Everything you need, on site"
+        lede="Grand Villaggio offers a range of top-tier amenities — a sparkling swimming pool, a state-of-the-art gym, two spas, a fully equipped business centre and versatile meeting rooms for corporate or social gatherings."
+      />
+      <div class="rows">
+        {grandFacilities.map((f, i) => <VenueRow venue={f} flip={i % 2 === 1} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-sand">
+    <div class="shell">
+      <SectionHead eyebrow="At a glance" title="Hotel services" />
+      <ul class="svc reveal">
+        {
+          [
+            'Free private parking',
+            'Airport transfer on request',
+            '24-hour front desk',
+            'Concierge & tour desk',
+            'Room service',
+            'Laundry & dry cleaning',
+            'Business centre',
+            'Meeting & event rooms',
+            'Free Wi-Fi throughout',
+            'Currency exchange assistance',
+            'Luggage storage',
+            'Accessible rooms & facilities',
+          ].map((s) => <li>{s}</li>)
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Planning a conference, an away-day or a wedding?"
+    text="Our events team handles audiovisual, seating and catering end to end. Tell us the date and the headcount and we will send a proposal."
+    href={bookingLinks.grand}
+    label="Check availability"
+  />
+</Base>
+
+<style>
+  .rows { margin-top: clamp(2.5rem, 6vw, 4.5rem); display: grid; gap: clamp(3rem, 8vw, 6rem); }
+  .svc {
+    margin-top: 2rem;
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.9rem 2rem;
+  }
+  .svc li { font-size: 0.92rem; color: var(--ink-2); padding-left: 1.2rem; position: relative; }
+  .svc li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 7px;
+    height: 1px;
+    background: var(--clay);
+  }
+  @media (max-width: 900px) { .svc { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .svc { grid-template-columns: minmax(0, 1fr); } }
+</style>

@@ -1,0 +1,117 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import SectionHead from '../components/SectionHead.astro';
+import Figure from '../components/Figure.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const commitments = [
+  {
+    title: 'Wooden keycards',
+    text: 'To cut plastic waste we moved to eco-friendly wooden keycards — durable, good-looking and biodegradable, so they leave no lasting impact.',
+  },
+  {
+    title: '100% rPET water bottles',
+    text: 'Our in-room bottles are made from post-consumer recycled plastic. They are infinitely recyclable and cut carbon emissions by around 75% against virgin plastic.',
+  },
+  {
+    title: 'Italian bathroom amenities',
+    text: 'Bathroom products come from GFL Cosmetics, made with eco-friendly processes and packaged in recycled bottles — luxury without the guilt.',
+  },
+  {
+    title: 'Plastic-free dry amenities',
+    text: 'Dry amenities are made from natural straw and wrapped in craft paper. Completely plastic-free, with no compromise on quality.',
+  },
+  {
+    title: 'Water-saving laundry',
+    text: 'Advanced water-saving technology, optimised washing cycles and energy-efficient machines conserve water without touching cleanliness or comfort.',
+  },
+];
+---
+
+<Base
+  title="Our Green Commitment"
+  description="Sustainability at Villaggio Hotels & Resorts — wooden keycards, 100% rPET water bottles, plastic-free dry amenities, GFL Cosmetics toiletries and water-saving laundry."
+  overlay
+>
+  <Hero
+    image="vh-pool-umbrellas.webp"
+    alt="Trees and greenery around the pool at Villaggio Hotel"
+    eyebrow="Sustainability at our core"
+    title="Luxury meets responsibility"
+    sub="We believe in the power of sustainable living, and we are reducing our environmental footprint across every part of the operation."
+    height="tall"
+  />
+
+  <section class="section">
+    <div class="shell">
+      <SectionHead
+        eyebrow="How we are making a difference"
+        title="Five changes, already in place"
+        lede="None of these are pilots or pledges for a future date — they are how both hotels run today."
+      />
+      <div class="list">
+        {
+          commitments.map((c, i) => (
+            <article class="row reveal">
+              <span class="row-n">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="row-t">{c.title}</h3>
+              <p class="row-x">{c.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-sand">
+    <div class="shell join">
+      <Figure src="gv-detail-coffee.webp" alt="Villaggio branded cups and complimentary water bottles on a tray" ratio="ar-4-3" sizes="(max-width: 860px) 92vw, 46vw" class="reveal" />
+      <div class="reveal stack">
+        <p class="eyebrow">Join us</p>
+        <h2 class="join-t">Every small step counts</h2>
+        <p class="lede">
+          We invite you to be part of our sustainability journey. Reuse your towels, keep the same
+          linen for a second night, refill your bottle at the water stations — together we make a
+          significant impact.
+        </p>
+        <p class="muted">
+          Discover the luxury of eco-conscious living at Villaggio Hotels &amp; Resorts, where
+          sustainability is a way of life rather than a certificate on the wall.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .list { margin-top: clamp(2rem, 5vw, 3.5rem); display: grid; }
+  .row {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr) minmax(0, 1.5fr);
+    gap: clamp(1rem, 3vw, 2.5rem);
+    padding-block: clamp(1.4rem, 3vw, 2.2rem);
+    border-top: 1px solid var(--line);
+    align-items: baseline;
+  }
+  .row:last-child { border-bottom: 1px solid var(--line); }
+  .row-n { font-family: var(--font-display); font-size: 1.1rem; color: var(--olive); }
+  .row-t { font-size: var(--text-xl); }
+  .row-x { color: var(--ink-2); font-size: 0.95rem; }
+
+  .join {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(1.75rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .join-t { font-size: var(--text-2xl); }
+
+  @media (max-width: 860px) {
+    .row { grid-template-columns: 2.5rem minmax(0, 1fr); }
+    .row-x { grid-column: 2; }
+    .join { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

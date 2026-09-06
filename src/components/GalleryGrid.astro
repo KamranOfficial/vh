@@ -1,0 +1,165 @@
+---
+import { Image, getImage } from 'astro:assets';
+import { img } from '../data/images';
+
+interface Item { src: string; alt: string }
+interface Props { items: Item[] }
+const { items } = Astro.props;
+
+const full = await Promise.all(
+  items.map((it) => getImage({ src: img(it.src), width: 1600, format: 'webp', quality: 74 }))
+);
+---
+
+<div class="gal">
+  {
+    items.map((it, i) => (
+      <button
+        class="gal-item"
+        type="button"
+        data-index={i}
+        data-full={full[i].src}
+        aria-label={`Open image: ${it.alt}`}
+      >
+        <Image
+          src={img(it.src)}
+          alt={it.alt}
+          widths={[300, 520, 900]}
+          sizes="(max-width: 640px) 46vw, (max-width: 1100px) 31vw, 24vw"
+          loading={i === 0 ? 'eager' : 'lazy'}
+          format="webp"
+          quality={68}
+        />
+      </button>
+    ))
+  }
+</div>
+
+<dialog class="lb" aria-label="Image viewer">
+  <button class="lb-close" type="button" aria-label="Close viewer">&times;</button>
+  <button class="lb-prev" type="button" aria-label="Previous image">&#8249;</button>
+  <button class="lb-next" type="button" aria-label="Next image">&#8250;</button>
+  <figure class="lb-fig">
+    <img alt="" />
+    <figcaption></figcaption>
+  </figure>
+</dialog>
+
+<style>
+  .gal {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-flow: dense;
+    gap: 10px;
+  }
+  .gal-item {
+    padding: 0;
+    overflow: hidden;
+    background: var(--sand);
+    border-radius: var(--radius);
+    aspect-ratio: 4 / 3;
+  }
+  .gal-item :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s var(--ease), opacity 0.4s var(--ease);
+  }
+  .gal-item:hover :global(img) { transform: scale(1.05); opacity: 0.92; }
+  /* Wide tiles keep the same row height (8/3 = 2 x 4/3), so rows stay flush. */
+  .gal-item:nth-child(9n + 1) { grid-column: span 2; aspect-ratio: 8 / 3; }
+  @media (max-width: 1100px) {
+    .gal { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .gal { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .gal-item:nth-child(9n + 1) { grid-column: span 2; aspect-ratio: 8 / 3; }
+  }
+
+  .lb {
+    border: 0;
+    padding: 0;
+    margin: 0;
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    max-width: 100vw;
+    height: 100dvh;
+    max-height: 100dvh;
+    background: rgba(10, 8, 5, 0.96);
+    color: #fff;
+    overflow: hidden;
+  }
+  .lb:not([open]) { display: none; }
+  .lb[open] { display: grid; place-items: center; }
+  .lb::backdrop { background: rgba(10, 8, 5, 0.96); }
+  .lb-fig {
+    margin: 0;
+    width: min(92vw, 1180px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+  }
+  .lb-fig img {
+    width: 100%;
+    max-height: 82vh;
+    object-fit: contain;
+    border-radius: var(--radius);
+  }
+  .lb-fig figcaption { font-size: var(--text-sm); color: #cfc5b6; text-align: center; }
+  .lb button {
+    position: fixed;
+    color: #fff;
+    font-size: 2.4rem;
+    line-height: 1;
+    width: 3rem;
+    height: 3rem;
+    display: grid;
+    place-items: center;
+    opacity: 0.75;
+  }
+  .lb button:hover { opacity: 1; }
+  .lb-close { top: 1rem; right: 1.25rem; font-size: 2.6rem; }
+  .lb-prev { left: 0.5rem; top: 50%; transform: translateY(-50%); }
+  .lb-next { right: 0.5rem; top: 50%; transform: translateY(-50%); }
+</style>
+
+<script>
+  const grid = document.querySelector<HTMLElement>('.gal');
+  const lb = document.querySelector<HTMLDialogElement>('.lb');
+  if (grid && lb) {
+    const figImg = lb.querySelector('img') as HTMLImageElement;
+    const cap = lb.querySelector('figcaption') as HTMLElement;
+    const buttons = Array.from(grid.querySelectorAll<HTMLButtonElement>('.gal-item'));
+    const sources = buttons.map((b) => {
+      const im = b.querySelector('img') as HTMLImageElement;
+      return { src: b.dataset.full || im.currentSrc || im.src, alt: im.alt };
+    });
+    let current = 0;
+    const show = (i: number) => {
+      current = (i + sources.length) % sources.length;
+      const s = sources[current];
+      figImg.src = s.src;
+      figImg.alt = s.alt;
+      cap.textContent = `${s.alt} — ${current + 1} / ${sources.length}`;
+    };
+    buttons.forEach((b, i) =>
+      b.addEventListener('click', () => {
+        show(i);
+        lb.showModal();
+      })
+    );
+    lb.querySelector('.lb-close')?.addEventListener('click', () => lb.close());
+    lb.querySelector('.lb-prev')?.addEventListener('click', () => show(current - 1));
+    lb.querySelector('.lb-next')?.addEventListener('click', () => show(current + 1));
+    lb.addEventListener('click', (e) => {
+      if (e.target === lb) lb.close();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (!lb.open) return;
+      if (e.key === 'ArrowRight') show(current + 1);
+      if (e.key === 'ArrowLeft') show(current - 1);
+    });
+  }
+</script>

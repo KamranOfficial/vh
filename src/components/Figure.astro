@@ -1,0 +1,41 @@
+---
+import { Image } from 'astro:assets';
+import { img } from '../data/images';
+
+interface Props {
+  src: string;
+  alt: string;
+  ratio?: string;
+  sizes?: string;
+  widths?: number[];
+  eager?: boolean;
+  class?: string;
+  zoom?: boolean;
+  position?: string;
+}
+const {
+  src,
+  alt,
+  ratio = 'ar-4-3',
+  sizes = '(max-width: 640px) 92vw, (max-width: 1100px) 46vw, 620px',
+  widths = [400, 700, 1100, 1500],
+  eager = false,
+  class: cls = '',
+  zoom = true,
+  position,
+} = Astro.props;
+---
+
+<div class:list={['media', ratio, zoom && 'media-zoom', cls]}>
+  <Image
+    src={img(src)}
+    alt={alt}
+    widths={widths}
+    sizes={sizes}
+    loading={eager ? 'eager' : 'lazy'}
+    decoding="async"
+    format="webp"
+    quality={70}
+    style={position ? `object-position:${position}` : undefined}
+  />
+</div>

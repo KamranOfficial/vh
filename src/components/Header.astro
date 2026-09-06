@@ -1,0 +1,215 @@
+---
+import Logo from './Logo.astro';
+import { nav, site } from '../data/site';
+
+interface Props { overlay?: boolean }
+const { overlay = false } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+---
+
+<header class:list={['hdr', overlay && 'hdr-overlay']} data-overlay={overlay ? 'true' : 'false'}>
+  <div class="shell-wide hdr-inner">
+    <a href="/" class="brand" aria-label="Villaggio Hotels & Resorts — home">
+      <Logo size={30} />
+      <span class="brand-text">
+        <span class="brand-name">Villaggio</span>
+        <span class="brand-sub">Hotels &amp; Resorts</span>
+      </span>
+    </a>
+
+    <nav class="nav" aria-label="Primary">
+      {
+        nav.map((item) => (
+          <a
+            href={item.href}
+            class:list={['nav-link', path === item.href || path.startsWith(item.href + '/') ? 'is-active' : '']}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="hdr-actions">
+      <a href={site.phoneHref} class="hdr-phone">{site.phone}</a>
+      <a href="/contact" class="btn btn-primary hdr-cta">Book a stay</a>
+      <button class="burger" type="button" aria-expanded="false" aria-controls="mobile-nav" aria-label="Open menu">
+        <span></span><span></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="mnav" id="mobile-nav" hidden>
+    <nav aria-label="Mobile">
+      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+    <div class="mnav-foot">
+      <a href={site.phoneHref}>{site.phone}</a>
+      <a href={`mailto:${site.email}`}>{site.email}</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .hdr {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--cream);
+    border-bottom: 1px solid var(--line);
+    transition: background-color 0.4s var(--ease), border-color 0.4s var(--ease),
+      color 0.4s var(--ease);
+  }
+  .hdr-overlay {
+    position: fixed;
+    inset-inline: 0;
+    background: transparent;
+    border-color: transparent;
+    color: #fff;
+  }
+  .hdr-overlay.is-stuck {
+    background: var(--cream);
+    color: var(--ink);
+    border-color: var(--line);
+  }
+  .hdr-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-8);
+    min-height: 76px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex: none;
+  }
+  .brand-text { display: flex; flex-direction: column; line-height: 1.05; }
+  .brand-name {
+    font-family: var(--font-display);
+    font-size: 1.32rem;
+    letter-spacing: -0.015em;
+    font-variation-settings: 'SOFT' 30, 'WONK' 1;
+  }
+  .brand-sub {
+    font-size: 0.58rem;
+    letter-spacing: 0.26em;
+    text-transform: uppercase;
+    opacity: 0.7;
+  }
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.9rem, 1.6vw, 1.9rem);
+    margin-inline: auto;
+  }
+  .nav-link {
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    padding-block: 0.4rem;
+    position: relative;
+    white-space: nowrap;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 1px;
+    width: 0;
+    background: currentColor;
+    transition: width 0.4s var(--ease);
+  }
+  .nav-link:hover::after,
+  .nav-link.is-active::after { width: 100%; }
+
+  .hdr-actions { display: flex; align-items: center; gap: 1.1rem; flex: none; }
+  .hdr-phone {
+    font-size: 0.8rem;
+    letter-spacing: 0.06em;
+    font-variant-numeric: tabular-nums;
+  }
+  .hdr-phone:hover { color: var(--clay); }
+  .hdr-cta { padding: 0.7em 1.35em; }
+  .hdr-overlay:not(.is-stuck) .hdr-cta {
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(6px);
+  }
+  .hdr-overlay:not(.is-stuck) .hdr-cta:hover { background: #fff; color: var(--ink); }
+
+  .burger {
+    display: none;
+    width: 38px;
+    height: 38px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 6px;
+    align-items: center;
+  }
+  .burger span {
+    display: block;
+    width: 22px;
+    height: 1.5px;
+    background: currentColor;
+    transition: transform 0.35s var(--ease), opacity 0.25s var(--ease);
+  }
+  .burger[aria-expanded='true'] span:first-child { transform: translateY(3.75px) rotate(45deg); }
+  .burger[aria-expanded='true'] span:last-child { transform: translateY(-3.75px) rotate(-45deg); }
+
+  .mnav {
+    display: none;
+    padding: 0 var(--gutter) 2rem;
+    background: var(--cream);
+    color: var(--ink);
+    border-top: 1px solid var(--line);
+  }
+  .mnav nav { display: flex; flex-direction: column; }
+  .mnav nav a {
+    font-family: var(--font-display);
+    font-size: 1.6rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .mnav-foot {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    margin-top: 1.5rem;
+    font-size: var(--text-sm);
+    color: var(--ink-3);
+  }
+
+  @media (max-width: 1120px) {
+    .nav, .hdr-phone { display: none; }
+    .burger { display: flex; }
+    .hdr-inner { justify-content: space-between; }
+    .mnav { display: block; }
+    .mnav[hidden] { display: none; }
+  }
+  @media (max-width: 460px) {
+    .hdr-cta { display: none; }
+  }
+</style>
+
+<script>
+  const hdr = document.querySelector<HTMLElement>('.hdr');
+  const burger = document.querySelector<HTMLButtonElement>('.burger');
+  const mnav = document.getElementById('mobile-nav');
+
+  burger?.addEventListener('click', () => {
+    const open = burger.getAttribute('aria-expanded') === 'true';
+    burger.setAttribute('aria-expanded', String(!open));
+    burger.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+    if (mnav) mnav.hidden = open;
+    hdr?.classList.toggle('is-stuck', !open ? true : window.scrollY > 40);
+  });
+
+  if (hdr?.dataset.overlay === 'true') {
+    const onScroll = () => hdr.classList.toggle('is-stuck', window.scrollY > 40);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>

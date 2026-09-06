@@ -1,0 +1,144 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import HotelSubnav from '../../components/HotelSubnav.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import VenueRow from '../../components/VenueRow.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { hotels, bookingLinks } from '../../data/site';
+import { villageFacilities, villageAmenities } from '../../data/venues';
+
+const h = hotels.village;
+---
+
+<Base
+  title={`Pools, Gym & Salons — ${h.name}`}
+  description="Two outdoor pools, a kids' playground, fitness club, 24/7 business centre, meeting rooms, GLOW Beauty Center and Montenegro Gents Salon at Villaggio Hotel Abu Dhabi."
+  overlay
+>
+  <Hero
+    image="vh-pool-wide.webp"
+    alt="The main outdoor pool at Villaggio Hotel surrounded by loungers and trees"
+    eyebrow={`${h.name} · Facilities`}
+    title="Exceptional services and amenities"
+    sub="Two pools under the trees, a gym by the water, a playground for the children, and salons for both of you."
+    height="mid"
+  />
+  <HotelSubnav base="/villaggio" name={h.name} />
+
+  <section class="section">
+    <div class="shell">
+      <SectionHead
+        eyebrow="Facilities"
+        title="First-class amenities for every guest"
+        lede="Villaggio Hotel is committed to providing everything a stay needs — outdoor relaxation, fitness facilities, business convenience, and meeting and event spaces that work as hard as you do."
+      />
+      <div class="rows">
+        {villageFacilities.map((f, i) => <VenueRow venue={f} flip={i % 2 === 1} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-ink">
+    <div class="shell">
+      <SectionHead
+        light
+        eyebrow="Also on site"
+        title="Fitness, business and beauty"
+        lede="Five more places to use during your stay, all inside the property and open to guests."
+      />
+      <div class="amen">
+        {
+          villageAmenities.map((a, i) => (
+            <article class="am reveal">
+              <span class="am-n">{String(i + 1).padStart(2, '0')}</span>
+              <div>
+                <h3 class="am-t">{a.name}</h3>
+                {a.hours && <p class="am-h">{a.hours}</p>}
+                <p class="am-x">{a.blurb}</p>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-sand">
+    <div class="shell">
+      <SectionHead eyebrow="At a glance" title="Hotel services" />
+      <ul class="svc reveal">
+        {
+          [
+            'Airport transfer on request',
+            '24-hour front desk',
+            'Room service',
+            'Laundry & dry cleaning',
+            'Poolside bar',
+            'Kids’ club & evening entertainment',
+            'Karaoke',
+            'Personal trainers & fitness classes',
+            'Fitness & spa locker rooms',
+            'Beauty, hair and nail services',
+            'Free Wi-Fi throughout',
+            'Accessible rooms & facilities',
+          ].map((s) => <li>{s}</li>)
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand
+    title="Meetings, celebrations and family weekends"
+    text="Our meeting rooms take corporate seminars and social gatherings alike, with modern technology and fully customisable setups. Tell us what you need."
+    href={bookingLinks.village}
+    label="Check availability"
+  />
+</Base>
+
+<style>
+  .rows { margin-top: clamp(2.5rem, 6vw, 4.5rem); display: grid; gap: clamp(3rem, 8vw, 6rem); }
+
+  .amen { margin-top: clamp(2rem, 5vw, 3.5rem); display: grid; }
+  .am {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: clamp(1rem, 3vw, 2rem);
+    padding-block: clamp(1.3rem, 3vw, 2rem);
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+  }
+  .am:last-child { border-bottom: 1px solid rgba(255, 255, 255, 0.16); }
+  .am-n { font-family: var(--font-display); font-size: 1.05rem; color: var(--gold); }
+  .am-t { font-size: var(--text-lg); color: var(--cream); }
+  .am-h {
+    font-size: 0.66rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #a3988a;
+    margin: 0.4rem 0 0.6rem;
+  }
+  .am-x { color: #c3b9aa; font-size: 0.94rem; max-width: 68ch; }
+  @media (max-width: 560px) {
+    .am { grid-template-columns: minmax(0, 1fr); gap: 0.5rem; }
+  }
+  .svc {
+    margin-top: 2rem;
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.9rem 2rem;
+  }
+  .svc li { font-size: 0.92rem; color: var(--ink-2); padding-left: 1.2rem; position: relative; }
+  .svc li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 7px;
+    height: 1px;
+    background: var(--clay);
+  }
+  @media (max-width: 900px) { .svc { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .svc { grid-template-columns: minmax(0, 1fr); } }
+</style>

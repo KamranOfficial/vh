@@ -1,0 +1,238 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import HotelSubnav from '../../components/HotelSubnav.astro';
+import Figure from '../../components/Figure.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import PolicyBlock from '../../components/PolicyBlock.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { hotels, bookingLinks, site } from '../../data/site';
+
+const h = hotels.grand;
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Hotel',
+  name: h.name,
+  starRating: { '@type': 'Rating', ratingValue: 4 },
+  telephone: '+97124992000',
+  email: h.email,
+  numberOfRooms: h.rooms,
+  checkinTime: '14:00',
+  checkoutTime: '12:00',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Khadeejah Bint Khuwaylid St, W14-02, Al Manhal',
+    addressLocality: 'Abu Dhabi',
+    addressCountry: 'AE',
+  },
+  amenityFeature: ['Swimming pool', 'Fitness centre', 'Spa', 'Restaurant', 'Nightclub', 'Meeting rooms'].map(
+    (n) => ({ '@type': 'LocationFeatureSpecification', name: n, value: true })
+  ),
+};
+
+const highlights = [
+  { n: '132', l: 'contemporary rooms & suites' },
+  { n: '16th', l: 'floor pool and fitness club' },
+  { n: '24/7', l: 'all-day dining restaurant' },
+  { n: '2', l: 'spas, plus a nightclub on 15' },
+];
+---
+
+<Base
+  title={h.name}
+  description="Grand Villaggio Hotel Abu Dhabi — an elegant 4-star tower in Al Manhal with 132 rooms, 24-hour dining, a 16th-floor pool and fitness club, two spas and Hummer Club."
+  overlay
+  jsonLd={jsonLd}
+>
+  <Hero
+    image="gv-exterior-facade.webp"
+    alt="Grand Villaggio Hotel's angular glass tower against a clear Abu Dhabi sky"
+    position="50% 40%"
+    eyebrow="Al Manhal · Abu Dhabi · 4 stars"
+    title="Grand Villaggio Hotel"
+    sub={h.tagline}
+    height="tall"
+    ctaHref={bookingLinks.grand}
+    ctaLabel="Check availability"
+    secondHref="/grand-villaggio/rooms"
+    secondLabel="See the rooms"
+  />
+  <HotelSubnav base="/grand-villaggio" name={h.name} />
+
+  <section class="section">
+    <div class="shell intro">
+      <div class="reveal">
+        <p class="eyebrow">Welcome</p>
+        <h2 class="intro-t">Calm, twenty floors above the traffic</h2>
+      </div>
+      <div class="reveal stack">
+        <p class="lede">{h.intro}</p>
+        <p class="muted">
+          Sheikh Zayed Grand Mosque, the Corniche, ADNEC Exhibition Centre and Al Wahda Mall are all
+          within a short drive — and business guests will find everything needed for a productive
+          stay without leaving the building.
+        </p>
+      </div>
+    </div>
+
+    <div class="shell-wide hl-strip">
+      {
+        highlights.map((x) => (
+          <div class="hl reveal">
+            <span class="hl-n">{x.n}</span>
+            <span class="hl-l">{x.l}</span>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="shell-wide mosaic">
+      <Figure src="gv-room-king.webp" alt="A Deluxe King room at Grand Villaggio with warm timber and city light" ratio="ar-4-3" sizes="(max-width: 900px) 92vw, 50vw" class="m1" />
+      <Figure src="gv-pool-lounge.webp" alt="Daybeds beside the indoor pool at Grand Villaggio" ratio="ar-4-5" sizes="(max-width: 900px) 92vw, 24vw" class="m2" />
+      <Figure src="gv-detail-coffee.webp" alt="Branded Villaggio cups and complimentary water on the in-room tray" ratio="ar-4-5" sizes="(max-width: 900px) 92vw, 24vw" class="m3" />
+    </div>
+  </section>
+
+  <section class="section on-ink">
+    <div class="shell">
+      <SectionHead
+        light
+        eyebrow="Inside the tower"
+        title="Four floors you will actually use"
+        lede="Everything at Grand Villaggio stacks vertically — coffee in the lobby, spa on M, dining on 16, and a club on 15 that runs until four."
+      />
+      <div class="grid g-3 floors">
+        <article class="floor reveal">
+          <span class="floor-n">16</span>
+          <h3>All Day Dining &amp; pool</h3>
+          <p>
+            International cuisine around the clock, with the swimming pool and Fitness &amp; Wellness
+            Club sharing the same floor.
+          </p>
+          <a class="link-arrow" href="/grand-villaggio/dining">Dining<svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true"><path d="M0 5h12M8.5 1 12.5 5l-4 4" stroke="currentColor" stroke-width="1.4"></path></svg></a>
+        </article>
+        <article class="floor reveal">
+          <span class="floor-n">15</span>
+          <h3>Hummer Club</h3>
+          <p>
+            World-class DJs, live performances and themed parties under state-of-the-art sound and
+            lighting, with exclusive VIP areas.
+          </p>
+          <a class="link-arrow" href="/grand-villaggio/dining">Nightlife<svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true"><path d="M0 5h12M8.5 1 12.5 5l-4 4" stroke="currentColor" stroke-width="1.4"></path></svg></a>
+        </article>
+        <article class="floor reveal">
+          <span class="floor-n">M</span>
+          <h3>Belle Care Luxury Spa</h3>
+          <p>
+            Massage, facials and body wraps in a tranquil room away from the lobby — plus Ruspa
+            European Spa for traditional banya rituals.
+          </p>
+          <a class="link-arrow" href="/grand-villaggio/facilities">Wellness<svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true"><path d="M0 5h12M8.5 1 12.5 5l-4 4" stroke="currentColor" stroke-width="1.4"></path></svg></a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="shell loc">
+      <div class="reveal stack">
+        <p class="eyebrow">Finding us</p>
+        <h2 class="loc-t">{h.address}</h2>
+        <dl class="loc-meta">
+          <div><dt>Reservations</dt><dd><a href={site.phoneHref}>{site.phone}</a></dd></div>
+          <div><dt>Hotel email</dt><dd><a href={`mailto:${h.email}`}>{h.email}</a></dd></div>
+          <div><dt>Check-in / out</dt><dd>{h.checkIn} / {h.checkOut}</dd></div>
+          <div><dt>Centre of Abu Dhabi</dt><dd>About 3 km</dd></div>
+        </dl>
+        <a
+          class="btn btn-ghost"
+          href={`https://www.google.com/maps/search/?api=1&query=${h.mapQuery}`}
+          target="_blank"
+          rel="noopener">Open in maps</a
+        >
+      </div>
+      <Figure src="gv-entrance-night.webp" alt="The illuminated Grand Villaggio Hotel entrance canopy at night" ratio="ar-4-3" sizes="(max-width: 900px) 92vw, 50vw" class="reveal" />
+    </div>
+  </section>
+
+  <PolicyBlock checkIn={h.checkIn} checkOut={h.checkOut} />
+  <CtaBand href={bookingLinks.grand} label="Book Grand Villaggio" />
+</Base>
+
+<style>
+  .intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+    gap: clamp(1.75rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .intro-t { font-size: var(--text-2xl); margin-top: 0.9rem; max-width: 14ch; }
+
+  .hl-strip {
+    margin-top: clamp(2.5rem, 6vw, 4.5rem);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: var(--line);
+    border-block: 1px solid var(--line);
+  }
+  .hl { background: var(--cream); padding: clamp(1.2rem, 3vw, 2rem) 1.2rem; }
+  .hl-n {
+    display: block;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1;
+    color: var(--clay);
+  }
+  .hl-l { display: block; margin-top: 0.5rem; font-size: 0.8rem; color: var(--ink-3); }
+
+  .mosaic {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+    align-items: start;
+  }
+
+  .floors { margin-top: clamp(2rem, 5vw, 3.5rem); }
+  .floor {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    align-items: flex-start;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+  }
+  .floor-n {
+    font-family: var(--font-display);
+    font-size: 2.6rem;
+    line-height: 1;
+    color: var(--gold);
+  }
+  .floor h3 { font-size: var(--text-xl); color: var(--cream); }
+  .floor p { color: #c3b9aa; font-size: 0.94rem; }
+  .floor .link-arrow { margin-top: auto; }
+
+  .loc {
+    display: grid;
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+    gap: clamp(1.75rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .loc-t { font-size: var(--text-xl); max-width: 24ch; }
+  .loc-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.2rem; margin: 0.5rem 0 0; }
+  .loc-meta dt { font-size: 0.64rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.3rem; }
+  .loc-meta dd { margin: 0; font-size: 0.95rem; }
+  .loc-meta a:hover { color: var(--clay); }
+
+  @media (max-width: 900px) {
+    .intro, .loc { grid-template-columns: minmax(0, 1fr); }
+    .hl-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .mosaic { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 560px) {
+    .mosaic { grid-template-columns: minmax(0, 1fr); }
+    .loc-meta { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

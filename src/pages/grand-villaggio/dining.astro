@@ -1,0 +1,75 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import HotelSubnav from '../../components/HotelSubnav.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import VenueRow from '../../components/VenueRow.astro';
+import Figure from '../../components/Figure.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { hotels, bookingLinks } from '../../data/site';
+import { grandVenues } from '../../data/venues';
+
+const h = hotels.grand;
+---
+
+<Base
+  title={`Dining & Nightlife — ${h.name}`}
+  description="All Day Dining on the 16th floor open 24/7, a Costa Coffee lobby café, and Hummer Club on 15 — dining and nightlife at Grand Villaggio Hotel Abu Dhabi."
+  overlay
+>
+  <Hero
+    image="gv-dining-wide.webp"
+    alt="The all-day dining restaurant on the sixteenth floor of Grand Villaggio Hotel"
+    eyebrow={`${h.name} · Restaurants & bars`}
+    title="A culinary and entertainment haven"
+    sub="Savour exquisite flavours across our restaurants, then let the night take over fifteen floors below the roof."
+    height="mid"
+  />
+  <HotelSubnav base="/grand-villaggio" name={h.name} />
+
+  <section class="section">
+    <div class="shell">
+      <SectionHead
+        eyebrow="Three venues"
+        title="From a 6 am breakfast to a 4 am encore"
+        lede="Grand Villaggio is your gateway to an unforgettable dining and nightlife experience — international cuisine and local delicacies by day, music, drinks and atmosphere by night."
+      />
+      <div class="venues">
+        {grandVenues.map((v, i) => <VenueRow venue={v} flip={i % 2 === 1} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-ink">
+    <div class="shell">
+      <SectionHead light eyebrow="Breakfast" title="Continental and buffet, every morning" lede="Guests rate breakfast at Grand Villaggio 7.3 out of 10 on Booking.com. Served in the all-day dining restaurant on the sixteenth floor, with Costa Coffee available in the lobby from early." />
+    </div>
+    <div class="shell-wide strip">
+      <Figure src="gv-buffet.webp" alt="Fresh fruit laid out along the breakfast buffet" ratio="ar-4-3" sizes="(max-width: 900px) 92vw, 32vw" />
+      <Figure src="gv-dining-tables.webp" alt="Set tables in the Grand Villaggio dining room" ratio="ar-4-3" sizes="(max-width: 900px) 92vw, 32vw" />
+      <Figure src="gv-club-lounge.webp" alt="Blue-lit lounge seating at Hummer Club" ratio="ar-4-3" sizes="(max-width: 900px) 92vw, 32vw" />
+    </div>
+  </section>
+
+  <CtaBand
+    title="Reserve a table, or the whole floor"
+    text="Our team arranges private dining, celebrations and corporate evenings across all three venues. Call us and we will build the night around you."
+    href={bookingLinks.grand}
+    label="Check availability"
+  />
+</Base>
+
+<style>
+  .venues {
+    margin-top: clamp(2.5rem, 6vw, 4.5rem);
+    display: grid;
+    gap: clamp(3rem, 8vw, 6rem);
+  }
+  .strip {
+    margin-top: clamp(2rem, 5vw, 3.5rem);
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+  @media (max-width: 760px) { .strip { grid-template-columns: minmax(0, 1fr); } }
+</style>

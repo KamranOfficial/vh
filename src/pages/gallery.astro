@@ -1,0 +1,69 @@
+---
+import Base from '../layouts/Base.astro';
+import GalleryGrid from '../components/GalleryGrid.astro';
+import CtaBand from '../components/CtaBand.astro';
+
+const items = [
+  { src: 'gv-exterior-sunset.webp', alt: 'Grand Villaggio Hotel at sunset' },
+  { src: 'vh-pool-night.webp', alt: 'Villaggio Hotel outdoor pool at night' },
+  { src: 'gv-entrance-night.webp', alt: 'Grand Villaggio Hotel entrance canopy after dark' },
+  { src: 'vh-suite-royal.webp', alt: 'Royal Suite living room with private pool' },
+  { src: 'gv-pool.webp', alt: 'Indoor swimming pool on the sixteenth floor' },
+  { src: 'vh-restaurant-hall.webp', alt: 'Villaggio Restaurant and Café dining hall' },
+  { src: 'gv-hummer-club.webp', alt: 'Hummer Club dance floor under a star-lit ceiling' },
+  { src: 'gv-room-suite-living.webp', alt: 'Deluxe Suite King living area' },
+  { src: 'vh-pool-umbrellas.webp', alt: 'Parasols around the main pool at Villaggio Hotel' },
+  { src: 'gv-gym-weights.webp', alt: 'Free weights area at the Fitness and Wellness Club' },
+  { src: 'vh-room-deluxe-king.jpg', alt: 'Deluxe King room at Villaggio Hotel' },
+  { src: 'gv-dining-room.webp', alt: 'All Day Dining restaurant on the sixteenth floor' },
+  { src: 'gv-exterior-tower.webp', alt: 'Grand Villaggio Hotel glass facade from below' },
+  { src: 'vh-restaurant-lounge.webp', alt: 'Hoods Resto and Bar seating' },
+  { src: 'gv-spa-treatment.webp', alt: 'Treatment room at Belle Care Luxury Spa' },
+  { src: 'vh-kids-playground.webp', alt: 'Covered kids playground with slides' },
+  { src: 'gv-meeting-boardroom.webp', alt: 'Boardroom set for a meeting' },
+  { src: 'gv-buffet.webp', alt: 'Fresh fruit on the breakfast buffet' },
+  { src: 'vh-suite-executive.jpg', alt: 'Executive Suite lounge at Villaggio Hotel' },
+  { src: 'gv-hummer-club-bar.webp', alt: 'The bar at Hummer Club' },
+  { src: 'gv-exterior-flags.webp', alt: 'Flags outside Grand Villaggio Hotel' },
+  { src: 'vh-room-superior.jpg', alt: 'Superior room at Villaggio Hotel' },
+  { src: 'gv-spa-corridor.webp', alt: 'Spa corridor in warm gold light' },
+  { src: 'gv-pool-lounge.webp', alt: 'Daybeds beside the indoor pool' },
+  { src: 'vh-restaurant-buffet.webp', alt: 'Buffet counter at Sahriya Gourmet Restaurant' },
+  { src: 'gv-gym-cardio.webp', alt: 'Cardio machines facing the pool' },
+  { src: 'gv-detail-coffee.webp', alt: 'Villaggio branded cups on the in-room tray' },
+  { src: 'gv-tower-night.webp', alt: 'Grand Villaggio Hotel lit up at night' },
+  { src: 'vh-room-standard.jpg', alt: 'Standard room at Villaggio Hotel' },
+  { src: 'gv-club-lounge.webp', alt: 'Lounge seating at Hummer Club' },
+  { src: 'gv-dining-tables.webp', alt: 'Set tables in the Grand Villaggio dining room' },
+  { src: 'gv-exterior-facade.webp', alt: 'Grand Villaggio Hotel seen from the plaza' },
+];
+---
+
+<Base
+  title="Gallery"
+  description="Photographs of Grand Villaggio Hotel and Villaggio Hotel Abu Dhabi — rooms and suites, pools, restaurants, clubs, spas and gardens."
+>
+  <section class="head">
+    <div class="shell">
+      <p class="eyebrow">Gallery</p>
+      <h1 class="head-t">Two hotels, photographed</h1>
+      <p class="lede">
+        Rooms and suites, pools indoors and out, four restaurants, two clubs, two spas and a
+        playground. Select any image to view it larger.
+      </p>
+    </div>
+  </section>
+
+  <section class="section-tight">
+    <div class="shell-wide">
+      <GalleryGrid items={items} />
+    </div>
+  </section>
+
+  <CtaBand />
+</Base>
+
+<style>
+  .head { padding-block: clamp(3rem, 7vw, 5.5rem) clamp(1.5rem, 3vw, 2.5rem); }
+  .head-t { font-size: var(--text-3xl); margin: 0.8rem 0 1rem; }
+</style>

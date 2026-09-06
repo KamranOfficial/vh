@@ -1,0 +1,107 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import HotelSubnav from '../../components/HotelSubnav.astro';
+import SectionHead from '../../components/SectionHead.astro';
+import RoomCard from '../../components/RoomCard.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { hotels, bookingLinks } from '../../data/site';
+import { villageRooms } from '../../data/rooms';
+
+const h = hotels.village;
+---
+
+<Base
+  title={`Rooms & Suites — ${h.name}`}
+  description="Nine room and suite categories at Villaggio Hotel Abu Dhabi, from a 20 m² Standard Room to a 62 m² Executive Suite and a Royal Suite with private pool."
+  overlay
+>
+  <Hero
+    image="vh-suite-executive.jpg"
+    alt="The seating area of an Executive Suite at Villaggio Hotel"
+    eyebrow={`${h.name} · ${h.rooms} rooms`}
+    title="Rooms & suites"
+    sub="Nine categories spread across separate villas — from a compact standard room to a royal suite with its own pool."
+    height="mid"
+  />
+  <HotelSubnav base="/villaggio" name={h.name} />
+
+  <section class="section">
+    <div class="shell">
+      <SectionHead
+        eyebrow="Accommodation"
+        title="Experience tranquility at our resort-style hotel"
+        lede="The property is a collection of separate villas, each housing a variety of rooms and suites. Stroll through internal corridors lined with vibrant flowers and lush greenery, and settle into the tranquil ambiance of a village setting."
+      />
+      <div class="grid g-2 rooms">
+        {villageRooms.map((room, i) => <RoomCard room={room} bookHref={bookingLinks.village} index={i} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="section on-sand">
+    <div class="shell">
+      <SectionHead eyebrow="In every room" title="What comes as standard" />
+      <ul class="std reveal">
+        {
+          [
+            'Free Wi-Fi throughout',
+            'Air conditioning',
+            'LED television',
+            'Cable channels',
+            'Minibar',
+            'Electric kettle',
+            'Safety deposit box',
+            'Desk & seating area',
+            'Free toiletries',
+            'Bathrobe & slippers',
+            'Hairdryer & iron',
+            'Wake-up service & alarm clock',
+            'Telephone',
+            'Wardrobe',
+            'Daily housekeeping',
+            'Room service',
+          ].map((s) => <li>{s}</li>)
+        }
+      </ul>
+      <p class="note reveal">
+        Some villas are served by stairs only — tell us your preference when booking and we will
+        place you accordingly. Accessible rooms and an adapted Executive Suite are available.
+      </p>
+    </div>
+  </section>
+
+  <CtaBand href={bookingLinks.village} label="Book Villaggio Hotel" />
+</Base>
+
+<style>
+  .rooms { margin-top: clamp(2rem, 5vw, 3.5rem); }
+  .std {
+    margin-top: 2rem;
+    list-style: none;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.9rem 2rem;
+  }
+  .std li { font-size: 0.92rem; color: var(--ink-2); padding-left: 1.2rem; position: relative; }
+  .std li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.55em;
+    width: 7px;
+    height: 1px;
+    background: var(--clay);
+  }
+  .note {
+    margin-top: 2rem;
+    font-size: 0.92rem;
+    color: var(--ink-3);
+    max-width: 62ch;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+  @media (max-width: 900px) { .std { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 480px) { .std { grid-template-columns: minmax(0, 1fr); } }
+</style>

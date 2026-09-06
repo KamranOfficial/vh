@@ -1,0 +1,313 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import Figure from '../components/Figure.astro';
+import SectionHead from '../components/SectionHead.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { site, hotels, bookingLinks } from '../data/site';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'HotelGroup',
+  name: site.name,
+  url: 'https://villaggiohotels.ae',
+  foundingDate: '2019',
+  telephone: '+97124992000',
+  email: site.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Al Salam Street, Al Nahyan',
+    addressLocality: 'Abu Dhabi',
+    addressCountry: 'AE',
+  },
+  subOrganization: [
+    { '@type': 'Hotel', name: hotels.grand.name, starRating: { '@type': 'Rating', ratingValue: 4 } },
+    { '@type': 'Hotel', name: hotels.village.name, starRating: { '@type': 'Rating', ratingValue: 4 } },
+  ],
+};
+
+const pillars = [
+  {
+    title: 'Elite',
+    words: 'Elegant · Stimulating · Flexible · Attentive',
+    text: 'Service that recognises you, remembers you and moves at your pace.',
+  },
+  {
+    title: 'Boutique',
+    words: 'Vibrant · Contemporary · Warm & caring',
+    text: 'Rooms with character and value, built for business efficiency without the corporate chill.',
+  },
+  {
+    title: 'Wellness',
+    words: 'Dynamic · Healthy · Effortless · Well located',
+    text: 'Pools, gyms and spas that are part of the stay, not an upsell at the end of it.',
+  },
+  {
+    title: 'Suites',
+    words: 'Homey · Warm · Special · Distinctive',
+    text: 'From a junior suite with a terrace to a royal suite with its own private pool.',
+  },
+];
+---
+
+<Base
+  title={site.name}
+  description="Villaggio Hotels & Resorts — two four-star Abu Dhabi hotels: a garden village retreat on Al Salam Street and a contemporary city tower in Al Manhal. Rooms, suites, dining, wellness and events."
+  overlay
+  jsonLd={jsonLd}
+>
+  <Hero
+    image="gv-exterior-sunset.webp"
+    alt="Grand Villaggio Hotel tower catching the last light over Abu Dhabi"
+    eyebrow="Abu Dhabi · Since 2019"
+    title="Two hotels, one idea of hospitality"
+    sub="A garden village hidden off Al Salam Street, and a 4-star tower in the middle of the capital. Both run by the same family of hoteliers, both open around the clock."
+    height="full"
+    align="center"
+    ctaHref="/contact"
+    ctaLabel="Book a stay"
+    secondHref="#hotels"
+    secondLabel="Explore the hotels"
+  />
+
+  <!-- Intro -->
+  <section class="section">
+    <div class="shell intro">
+      <div class="reveal">
+        <p class="eyebrow">Welcome to Villaggio</p>
+        <h2 class="intro-title">
+          Villaggio means village. Everything we build starts there — small streets, familiar faces,
+          a door that is always open.
+        </h2>
+      </div>
+      <div class="intro-side reveal">
+        <p class="lede">{site.description}</p>
+        <p class="muted">
+          Both properties sit minutes from Sheikh Zayed Grand Mosque, the Corniche and ADNEC, with
+          reception, dining and reservations available 24 hours a day.
+        </p>
+        <a class="link-arrow" href="/contact">
+          Talk to reservations
+          <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+            <path d="M0 5h12M8.5 1 12.5 5l-4 4" stroke="currentColor" stroke-width="1.4"></path>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- The two hotels -->
+  <section class="section-tight" id="hotels">
+    <div class="shell-wide">
+      <div class="hotels">
+        <a class="hcard reveal" href={`/${hotels.village.slug}`}>
+          <Figure
+            src="vh-pool-wide.webp"
+            alt="Villaggio Hotel's outdoor pool lit at dusk, ringed with parasols and greenery"
+            ratio="ar-3-2"
+            sizes="(max-width: 900px) 92vw, 46vw"
+          />
+          <div class="hcard-body">
+            <p class="eyebrow">{hotels.village.rooms} rooms · Al Salam Street</p>
+            <h3 class="hcard-title">{hotels.village.name}</h3>
+            <p class="hcard-text">{hotels.village.tagline}</p>
+            <span class="link-arrow">
+              Enter the village
+              <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+                <path d="M0 5h12M8.5 1 12.5 5l-4 4" stroke="currentColor" stroke-width="1.4"></path>
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <a class="hcard reveal" href={`/${hotels.grand.slug}`}>
+          <Figure
+            src="gv-exterior-day.webp"
+            alt="The glass facade of Grand Villaggio Hotel rising above Al Manhal"
+            ratio="ar-3-2"
+            sizes="(max-width: 900px) 92vw, 46vw"
+          />
+          <div class="hcard-body">
+            <p class="eyebrow">{hotels.grand.rooms} rooms · Al Manhal</p>
+            <h3 class="hcard-title">{hotels.grand.name}</h3>
+            <p class="hcard-text">{hotels.grand.tagline}</p>
+            <span class="link-arrow">
+              Take the tower
+              <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true">
+                <path d="M0 5h12M8.5 1 12.5 5l-4 4" stroke="currentColor" stroke-width="1.4"></path>
+              </svg>
+            </span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Pillars -->
+  <section class="section on-sand">
+    <div class="shell">
+      <SectionHead
+        eyebrow="What we stand for"
+        title="Four ways to stay with us"
+        lede="Villaggio Hotels & Resorts was founded in Abu Dhabi in 2019 around four ideas. Every room, restaurant and spa we run belongs to one of them."
+      />
+      <div class="grid g-4 pillars">
+        {
+          pillars.map((p) => (
+            <article class="pillar reveal">
+              <h3 class="pillar-t">{p.title}</h3>
+              <p class="pillar-w">{p.words}</p>
+              <p class="pillar-x">{p.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Dining strip -->
+  <section class="section">
+    <div class="shell">
+      <SectionHead
+        eyebrow="Eat, drink, stay up late"
+        title="Seven venues across two addresses"
+        lede="Arabic plates by the pool, Mediterranean at Hoods, 24-hour all-day dining on the sixteenth floor, and two clubs that run until four in the morning."
+      />
+    </div>
+    <div class="shell-wide dine-grid">
+      <a class="dine reveal" href="/villaggio/dining">
+        <Figure src="vh-restaurant-hall.webp" alt="The bright main dining hall at Villaggio Restaurant & Café" ratio="ar-3-2" sizes="(max-width: 900px) 92vw, 40vw" />
+        <div class="dine-cap"><h3>Villaggio Restaurant &amp; Café</h3><p>Arabic · Daily 07:00 – 02:00</p></div>
+      </a>
+      <a class="dine reveal" href="/grand-villaggio/dining">
+        <Figure src="gv-hummer-club-bar.webp" alt="Hummer Club's bar glowing red and blue on the fifteenth floor" ratio="ar-3-2" sizes="(max-width: 900px) 92vw, 40vw" />
+        <div class="dine-cap"><h3>Hummer Club</h3><p>Nightclub · Daily 11:00 – 04:00</p></div>
+      </a>
+      <a class="dine reveal" href="/grand-villaggio/dining">
+        <Figure src="gv-dining-room.webp" alt="All Day Dining restaurant with pale wood floors and set tables" ratio="ar-3-2" sizes="(max-width: 900px) 92vw, 40vw" />
+        <div class="dine-cap"><h3>All Day Dining</h3><p>International · Open 24 / 7</p></div>
+      </a>
+      <a class="dine reveal" href="/villaggio/dining">
+        <Figure src="vh-restaurant-lounge.webp" alt="Hoods Resto & Bar seating in ochre and red" ratio="ar-3-2" sizes="(max-width: 900px) 92vw, 40vw" />
+        <div class="dine-cap"><h3>Hoods Resto &amp; Bar</h3><p>Mediterranean · Daily 11:00 – 04:00</p></div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Wellness split -->
+  <section class="section on-ink">
+    <div class="shell split">
+      <div class="split-media reveal">
+        <Figure src="gv-pool.webp" alt="The indoor swimming pool on the sixteenth floor of Grand Villaggio" ratio="ar-4-3" sizes="(max-width: 900px) 92vw, 48vw" />
+      </div>
+      <div class="split-body reveal">
+        <p class="eyebrow eyebrow-light">Wellness</p>
+        <h2 class="split-title">Pools on the sixteenth floor and in the garden</h2>
+        <p class="lede">
+          Grand Villaggio keeps its pool and Fitness &amp; Wellness Club side by side, sixteen floors
+          above the street. Villaggio Hotel keeps its two pools among the trees, with a kids' pool and
+          a poolside bar. Two spas, two salons, and personal trainers at both addresses.
+        </p>
+        <div class="split-links">
+          <a class="link-arrow" href="/grand-villaggio/facilities">
+            Grand Villaggio wellness
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true"><path d="M0 5h12M8.5 1 12.5 5l-4 4" stroke="currentColor" stroke-width="1.4"></path></svg>
+          </a>
+          <a class="link-arrow" href="/villaggio/facilities">
+            Villaggio facilities
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="none" aria-hidden="true"><path d="M0 5h12M8.5 1 12.5 5l-4 4" stroke="currentColor" stroke-width="1.4"></path></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Abu Dhabi -->
+  <section class="section">
+    <div class="shell ad">
+      <div class="ad-body reveal">
+        <p class="eyebrow">The city</p>
+        <h2 class="ad-title">Abu Dhabi is ten minutes in every direction</h2>
+        <p class="lede">
+          Sheikh Zayed Grand Mosque, Qasr Al Watan, Louvre Abu Dhabi, the Corniche, ADNEC, Yas Island
+          and the Grand Prix circuit. Our concierge books it all, from a mosque tour before breakfast
+          to a karting session at midnight.
+        </p>
+        <a class="btn btn-ghost" href="/experience-abu-dhabi">Plan your days</a>
+      </div>
+      <div class="ad-media reveal">
+        <Figure src="gv-exterior-facade.webp" alt="Grand Villaggio Hotel seen from the plaza below" ratio="ar-4-5" sizes="(max-width: 900px) 92vw, 40vw" />
+      </div>
+    </div>
+  </section>
+
+  <CtaBand href={bookingLinks.village} label="Check availability" />
+</Base>
+
+<style>
+  .intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    gap: clamp(1.75rem, 6vw, 5rem);
+    align-items: start;
+  }
+  .intro-title {
+    font-size: var(--text-2xl);
+    margin-top: 1rem;
+    max-width: 20ch;
+  }
+  .intro-side { display: flex; flex-direction: column; gap: 1.1rem; align-items: flex-start; }
+
+  .hotels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(1rem, 3vw, 2rem); }
+  .hcard { display: block; }
+  .hcard-body { padding-top: 1.4rem; display: flex; flex-direction: column; gap: 0.6rem; align-items: flex-start; }
+  .hcard-title { font-size: var(--text-2xl); }
+  .hcard-text { color: var(--ink-2); }
+  .hcard .link-arrow { margin-top: 0.4rem; }
+
+  .pillars { margin-top: clamp(2rem, 5vw, 3.5rem); gap: 1px; background: var(--line); }
+  .pillar { background: var(--sand); padding: clamp(1.4rem, 2.5vw, 2rem); display: flex; flex-direction: column; gap: 0.6rem; }
+  .pillar-t { font-size: var(--text-xl); }
+  .pillar-w { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--clay); }
+  .pillar-x { font-size: 0.92rem; color: var(--ink-2); }
+
+  .dine-grid {
+    margin-top: clamp(2rem, 5vw, 3.5rem);
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(0.75rem, 2vw, 1.25rem);
+  }
+  .dine-cap { padding-top: 0.9rem; }
+  .dine-cap h3 { font-size: var(--text-lg); }
+  .dine-cap p { font-size: var(--text-sm); color: var(--ink-3); margin-top: 0.2rem; }
+
+  .split {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(1.75rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .split-body { display: flex; flex-direction: column; gap: 1rem; align-items: flex-start; }
+  .split-title { font-size: var(--text-2xl); color: var(--cream); max-width: 18ch; }
+  .split-links { display: flex; flex-wrap: wrap; gap: 1.5rem; margin-top: 0.5rem; }
+
+  .ad {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+    gap: clamp(1.75rem, 5vw, 4rem);
+    align-items: center;
+  }
+  .ad-body { display: flex; flex-direction: column; gap: 1.1rem; align-items: flex-start; }
+  .ad-title { font-size: var(--text-2xl); max-width: 16ch; }
+
+  @media (max-width: 1000px) {
+    .dine-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 860px) {
+    .intro, .hotels, .split, .ad { grid-template-columns: minmax(0, 1fr); }
+    .pillars { gap: 1px; }
+  }
+  @media (max-width: 560px) {
+    .dine-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

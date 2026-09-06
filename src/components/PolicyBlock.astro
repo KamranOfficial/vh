@@ -1,0 +1,64 @@
+---
+interface Props { checkIn: string; checkOut: string }
+const { checkIn, checkOut } = Astro.props;
+---
+
+<section class="section on-sand">
+  <div class="shell pol">
+    <div class="reveal">
+      <p class="eyebrow">Good to know</p>
+      <h2 class="pol-title">Policies</h2>
+      <p class="muted pol-note">
+        Cancellation policies vary with the rate and dates of your reservation — check your
+        confirmation, or call the hotel and we will sort it out with you.
+      </p>
+    </div>
+    <dl class="pol-grid reveal">
+      <div><dt>Standard check-in</dt><dd>{checkIn}</dd></div>
+      <div><dt>Standard check-out</dt><dd>{checkOut}</dd></div>
+      <div><dt>Minimum age to register</dt><dd>18 years</dd></div>
+      <div><dt>Currency</dt><dd>UAE Dirham (AED)</dd></div>
+      <div><dt>Cards accepted</dt><dd>Visa · MasterCard</dd></div>
+      <div>
+        <dt>Late check-out</dt>
+        <dd>50% of room rate after 12:00, 100% after 18:00 — subject to availability</dd>
+      </div>
+      <div>
+        <dt>Early check-out</dt>
+        <dd>100% of room rate, unless notified 24 hours in advance</dd>
+      </div>
+      <div><dt>Reception</dt><dd>Open 24 hours, every day</dd></div>
+    </dl>
+  </div>
+</section>
+
+<style>
+  .pol {
+    display: grid;
+    grid-template-columns: minmax(0, 0.75fr) minmax(0, 1.25fr);
+    gap: clamp(1.75rem, 5vw, 4rem);
+    align-items: start;
+  }
+  .pol-title { font-size: var(--text-2xl); margin: 0.7rem 0 0.9rem; }
+  .pol-note { font-size: 0.92rem; max-width: 34ch; }
+  .pol-grid {
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem 2.5rem;
+  }
+  .pol-grid dt {
+    font-size: 0.64rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 0.35rem;
+  }
+  .pol-grid dd { margin: 0; font-size: 0.95rem; color: var(--ink); }
+  @media (max-width: 860px) {
+    .pol { grid-template-columns: minmax(0, 1fr); }
+  }
+  @media (max-width: 520px) {
+    .pol-grid { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>
