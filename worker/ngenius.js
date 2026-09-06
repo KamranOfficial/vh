@@ -1,31 +1,27 @@
 // @ts-check
 /**
  * N-Genius Online payment client.
- * Pure functions — no env, no global state. The caller passes the API key
- * (base64 outletRef:apiKey string) and host. All calls are direct fetches
- * (the secret never lives in code or files).
  *
- * Flow: getAccessToken -> createOrder -> redirect to _links.payment.href.
+ * The API key and outlet reference are supplied separately through
+ * Cloudflare Worker Secrets.
  */
 
 const IDENTITY_PATH = '/identity/auth/access-token';
-const ORDERS_PATH = (outletRef) => `/transactions/outlets/${outletRef}/orders`;
-const ORDER_PATH = (outletRef, ref) => `/transactions/outlets/${outletRef}/orders/${ref}`;
 
-/** Strip an optional "Basic " prefix so callers can pass either form. */
+const ORDERS_PATH = (outletRef) =>
+  `/transactions/outlets/${encodeURIComponent(outletRef)}/orders`;
+
+const ORDER_PATH = (outletRef, ref) =>
+  `/transactions/outlets/${encodeURIComponent(outletRef)}/orders/${encodeURIComponent(ref)}`;
+
 export function normalizeKey(apiKey) {
   if (!apiKey) return '';
-  const v = String(apiKey).trim();
-  return v.startsWith('Basic ') ? v.slice(6).trim() : v;
-}
 
-/** Derive the outlet reference from the base64 key (first segment). */
-export function outletRefFromKey(apiKey) {
-  try {
-    return atob(normalizeKey(apiKey)).split(':')[0];
-  } catch {
-    return '';
-  }
+  const value = String(apiKey).trim();
+
+  return value.startsWith('Basic ')
+    ? value.slice(6).trim()
+    : value;
 }
 
 export async function getAccessToken(host, apiKey) {
@@ -36,86 +32,253 @@ export async function getAccessToken(host, apiKey) {
       'Content-Type': 'application/vnd.ni-identity.v1+json',
       Authorization: `Basic ${normalizeKey(apiKey)}`,
     },
-    body: JSON.stringify({ grant_type: 'client_credentials' }),
+    body: JSON.stringify({
+      grant_type: 'client_credentials',
+      realm: 'ni',
+    }),
   });
+
+  const detail = await safeText(res);
+
   if (!res.ok) {
-    const detail = await safeText(res);
-    throw new NgeniusError('auth_failed', res.status, detail);
+    throw new NgeniusError(
+      'auth_failed',
+      res.status,
+      detail
+    );
   }
-  const json = await res.json();
-  if (!json.access_token) throw new NgeniusError('no_token', res.status, JSON.stringify(json));
-  return json.access_token;
+
+  let data;
+
+  try {
+    data = JSON.parse(detail);
+  } catch {
+    throw new NgeniusError(
+      'invalid_auth_response',
+      res.status,
+      detail
+    );
+  }
+
+  if (!data.access_token) {
+    throw new NgeniusError(
+      'no_token',
+      res.status,
+      detail
+    );
+  }
+
+  return data.access_token;
 }
 
 /**
- * Create a hosted-checkout order. Returns the payment page URL + reference.
- * amount is in minor units (1 AED = 100). action PURCHASE captures immediately.
+ * Create a real N-Genius hosted payment order.
+ *
+ * amount must already be in minor units.
+ * Example:
+ * AED 100.00 = 10000
  */
-export async function createOrder(host, apiKey, order) {
-  const outletRef = order.outletRef || outletRefFromKey(apiKey);
+export async function createOrder(host, apiKey, outletRef, order) {
+  if (!outletRef) {
+    throw new NgeniusError(
+      'missing_outlet',
+      500,
+      'NGENIUS_OUTLET is not configured'
+    );
+  }
+
   const token = await getAccessToken(host, apiKey);
+
   const body = {
     action: 'PURCHASE',
-    amount: { currencyCode: order.currency, value: order.amount },
+
+    amount: {
+      currencyCode: order.currency,
+      value: order.amount,
+    },
+
+    emailAddress: order.emailAddress,
+
+    merchantOrderReference: order.merchantOrderReference,
+
     merchantAttributes: {
       redirectUrl: order.redirectUrl,
       cancelUrl: order.cancelUrl || order.redirectUrl,
     },
+
     orderSummary: {
-      total: { currencyCode: order.currency, value: order.amount },
-      items: order.items.map((it) => ({
+      total: {
+        currencyCode: order.currency,
+        value: order.amount,
+      },
+
+      items: (order.items || []).map((item) => ({
         category: 'Rooms',
-        description: it.description,
-        quantity: it.quantity,
-        totalPrice: { currencyCode: order.currency, value: it.amount },
+        description: item.description,
+        quantity: item.quantity,
+        totalPrice: {
+          currencyCode: order.currency,
+          value: item.amount,
+        },
       })),
     },
   };
-  const res = await fetch(`${host}${ORDERS_PATH(outletRef)}`, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/vnd.ni-payment.v2+json',
-      'Content-Type': 'application/vnd.ni-payment.v2+json',
-    },
-    body: JSON.stringify(body),
-  });
+
+  const res = await fetch(
+    `${host}${ORDERS_PATH(outletRef)}`,
+    {
+      method: 'POST',
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.ni-payment.v2+json',
+        'Content-Type': 'application/vnd.ni-payment.v2+json',
+      },
+
+      body: JSON.stringify(body),
+    }
+  );
+
+  const detail = await safeText(res);
+
   if (!res.ok) {
-    const detail = await safeText(res);
-    throw new NgeniusError('order_failed', res.status, detail);
+    throw new NgeniusError(
+      'order_failed',
+      res.status,
+      detail
+    );
   }
-  const json = await res.json();
-  const paymentUrl = json?._links?.payment?.href;
-  const reference = json?.reference;
-  if (!paymentUrl) throw new NgeniusError('no_payment_link', res.status, JSON.stringify(json));
-  return { reference, paymentUrl, raw: json };
+
+  let data;
+
+  try {
+    data = JSON.parse(detail);
+  } catch {
+    throw new NgeniusError(
+      'invalid_order_response',
+      res.status,
+      detail
+    );
+  }
+
+  const paymentUrl =
+    data?._links?.payment?.href ||
+    data?._links?.['cnp:payment-link']?.href;
+
+  const reference = data?.reference;
+
+  if (!paymentUrl) {
+    throw new NgeniusError(
+      'no_payment_link',
+      res.status,
+      detail
+    );
+  }
+
+  if (!reference) {
+    throw new NgeniusError(
+      'no_order_reference',
+      res.status,
+      detail
+    );
+  }
+
+  return {
+    reference,
+    paymentUrl,
+    raw: data,
+  };
 }
 
-/** Query the outcome of an order by reference (used after redirect-back). */
-export async function getOrderStatus(host, apiKey, outletRef, reference) {
-  const token = await getAccessToken(host, apiKey);
-  const res = await fetch(`${host}${ORDER_PATH(outletRef, reference)}`, {
-    headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.ni-payment.v2+json' },
-  });
-  if (!res.ok) {
-    const detail = await safeText(res);
-    throw new NgeniusError('status_failed', res.status, detail);
+export async function getOrderStatus(
+  host,
+  apiKey,
+  outletRef,
+  reference
+) {
+  if (!outletRef) {
+    throw new NgeniusError(
+      'missing_outlet',
+      500,
+      'NGENIUS_OUTLET is not configured'
+    );
   }
-  const json = await res.json();
-  // _embedded.payment[0].state is typically AUTHORIZED / CAPTURED / FAILED / DECLINED
-  const payment = json?._embedded?.payment?.[0];
+
+  if (!reference) {
+    throw new NgeniusError(
+      'missing_order_reference',
+      400,
+      'Missing N-Genius order reference'
+    );
+  }
+
+  const token = await getAccessToken(
+    host,
+    apiKey
+  );
+
+  const res = await fetch(
+    `${host}${ORDER_PATH(outletRef, reference)}`,
+    {
+      method: 'GET',
+
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.ni-payment.v2+json',
+      },
+    }
+  );
+
+  const detail = await safeText(res);
+
+  if (!res.ok) {
+    throw new NgeniusError(
+      'status_failed',
+      res.status,
+      detail
+    );
+  }
+
+  let data;
+
+  try {
+    data = JSON.parse(detail);
+  } catch {
+    throw new NgeniusError(
+      'invalid_status_response',
+      res.status,
+      detail
+    );
+  }
+
+  const payment =
+    data?._embedded?.payment?.[0];
+
   return {
-    reference: json?.reference || reference,
-    state: payment?.state || json?.state || 'UNKNOWN',
-    amount: payment?.amount?.value ?? json?.amount?.value,
-    currency: payment?.amount?.currencyCode ?? json?.amount?.currencyCode,
-    raw: json,
+    reference:
+      data?.reference || reference,
+
+    state:
+      payment?.state ||
+      data?.state ||
+      'UNKNOWN',
+
+    amount:
+      payment?.amount?.value ??
+      data?.amount?.value,
+
+    currency:
+      payment?.amount?.currencyCode ??
+      data?.amount?.currencyCode,
+
+    raw: data,
   };
 }
 
 export class NgeniusError extends Error {
   constructor(code, status, detail) {
     super(`${code} (${status})`);
+
     this.name = 'NgeniusError';
     this.code = code;
     this.status = status;
