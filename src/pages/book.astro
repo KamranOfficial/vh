@@ -240,6 +240,11 @@ const API_BASE = import.meta.env.PUBLIC_API_BASE || '';
 }
 
 window.location.href = data.paymentUrl;
+ } catch (err) {
+    console.error('Payment initialization error:', err);
+    setBusy(false);
+    alert('Network error — please try again.');
+  }
     });
   })();
 </script>
